@@ -1,22 +1,33 @@
 [project]
-name = "EcommerceReinaBackDjango"
+name = "ecommercereinabackend"
 version = "0.1.0"
-description = "Backend Django automatizado"
-authors = [{name = "SebiceC", email = "sebartin9@gmail.com"}]
-requires-python = ">=3.12"
+description = "backend-django"
+authors = [
+    {name = "Sebastian Cerquera",email = "sebartin9@gmail.com"}
+]
+readme = "README.md"
+requires-python = "^3.12"
 dependencies = [
-    "django>=5.0",
-    # ... tus otras dependencias
+    "django (>=5.2.8,<6.0.0)",
+    "djangorestframework (>=3.16.1,<4.0.0)"
 ]
 
-# Configuración de la herramienta de liberación automática
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "python-semantic-release (>=10.5.2,<11.0.0)"
+]
+
 [tool.semantic_release]
-version_variable = [
-    "pyproject.toml:version" 
-    # Opcional: También puedes hacer que actualice una variable en tu código
-    # "mi_app/__init__.py:__version__" 
+version_toml = [
+    "pyproject.toml:project.version"
 ]
 branch = "main"
-upload_to_pypi = false  
+upload_to_pypi = false
 upload_to_release = true
-build_command = false 
+build_command = false
+commit_message = "chore(release): {version} [skip ci]"
