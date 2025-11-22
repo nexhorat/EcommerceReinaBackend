@@ -1,0 +1,22 @@
+[project]
+name = "EcommerceReinaBackDjango"
+version = "0.1.0"
+description = "Backend Django automatizado"
+authors = [{name = "SebiceC", email = "sebartin9@gmail.com"}]
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.0",
+    # ... tus otras dependencias
+]
+
+# Configuración de la herramienta de liberación automática
+[tool.semantic_release]
+version_variable = [
+    "pyproject.toml:version" 
+    # Opcional: También puedes hacer que actualice una variable en tu código
+    # "mi_app/__init__.py:__version__" 
+]
+branch = "main"
+upload_to_pypi = false  
+upload_to_release = true
+build_command = false 
