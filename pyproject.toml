@@ -29,5 +29,5 @@ version_toml = [
 branch = "main"
 upload_to_pypi = false
 upload_to_release = true
-build_command = false
+build_command = "echo 'No build needed'"
 commit_message = "chore(release): {version} [skip ci]"
