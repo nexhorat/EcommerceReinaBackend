@@ -23,7 +23,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('marketing.urls')),
-    path('api/auth/', include('users.urls')),
+    path('api/usuarios/', include('users.urls')),
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
     # --- ZONA SWAGGER / DOCUMENTACIÓN ---
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

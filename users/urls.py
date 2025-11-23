@@ -1,13 +1,16 @@
 from django.urls import path
-from .views import RegisterView, UserDetailView, CustomTokenObtainPairView # Importa tu custom view
 from rest_framework_simplejwt.views import TokenRefreshView
+from .views import (
+    RegisterView, 
+    CustomTokenObtainPairView, 
+    UserProfileView, 
+    ChangePasswordView
+) 
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth_register'),
-    
-    # Usamos nuestra vista personalizada para que aparezca documentada
     path('login/', CustomTokenObtainPairView.as_view(), name='auth_login'),
-    
     path('token/refresh/', TokenRefreshView.as_view(), name='auth_token_refresh'),
-    path('me/', UserDetailView.as_view(), name='auth_me'),
+    path('perfil/', UserProfileView.as_view(), name='user-profile'),
+    path('perfil/cambiar-password/', ChangePasswordView.as_view(), name='change-password'),
 ]
