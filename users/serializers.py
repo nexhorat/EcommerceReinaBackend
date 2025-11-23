@@ -1,0 +1,28 @@
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name', 'password', 'telefono']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        # Usamos create_user del Manager para que hashee el password
+        user = User.objects.create_user(**validated_data)
+        return user
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'telefono', 'role']
+
+    def get_role(self, obj):
+        # Lógica para determinar el rol basado en grupos
+        if obj.is_superuser or obj.groups.filter(name='Administrador').exists():
+            return 'ADMIN'
+        return 'USER'
