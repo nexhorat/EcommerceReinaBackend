@@ -11,25 +11,58 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 import os
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+ENV_FILE = BASE_DIR / ".env"
+if ENV_FILE.exists():
+    environ.Env.read_env(str(ENV_FILE))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+
+def get_env(name, default=None, *, cast=None, required=False):
+    """Helper to read environment variables with consistent error handling."""
+    try:
+        if cast == "bool":
+            return env.bool(name, default=default)
+        if cast == "int":
+            return env.int(name, default=default)
+        if cast == "float":
+            return env.float(name, default=default)
+        if cast == "list":
+            return env.list(name, default=default)
+        return env(name, default=default)
+    except environ.ImproperlyConfigured as exc:
+        if required:
+            raise ImproperlyConfigured(f"Set the {name} environment variable.") from exc
+        return default
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
+
+EMAIL_BACKEND = get_env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = get_env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = get_env("EMAIL_PORT", default=587, cast="int")
+EMAIL_USE_TLS = get_env("EMAIL_USE_TLS", default=True, cast="bool")
+EMAIL_HOST_USER = get_env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = get_env("EMAIL_HOST_PASSWORD", default="")
+
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'users.User'
+
+
 
 
 # Application definition
@@ -235,3 +268,5 @@ CKEDITOR_5_CONFIGS = {
         }
     }
 }
+
+ 

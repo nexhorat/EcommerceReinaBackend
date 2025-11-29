@@ -5,6 +5,32 @@ from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
 
 
+class Categoria(models.Model):
+    TIPO_CHOICES = [
+        ('NOTICIA', 'Noticia'),
+        ('INVESTIGACION', 'Investigación'),
+        ('BLOG', 'Blog'),
+        # ('PRODUCTO', 'Producto'), # Descomentar cuando agregues el Ecommerce
+    ]
+    nombre = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, verbose_name="Tipo de Contenido")
+
+    class Meta:
+        verbose_name = "Categoría"
+        verbose_name_plural = "Categorías"
+        
+        unique_together = ('slug', 'tipo') 
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nombre)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.nombre} ({self.get_tipo_display()})"
+
+
 # Seccion nuestros servicios
 class Servicio(models.Model):
     # -- campos de cards --
@@ -51,31 +77,16 @@ class Servicio(models.Model):
     def __str__(self):
         return self.titulo
 
-class CategoriaNoticia(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True, blank=True)
-
-    class Meta:
-        verbose_name = "Categoría de Noticia"
-        verbose_name_plural = "Categorías de Noticias"
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.nombre)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.nombre
-
 
 class Noticia(models.Model):
     # Relación: Una noticia pertenece a una categoría
     categoria = models.ForeignKey(
-        CategoriaNoticia, 
+        Categoria, 
         on_delete=models.SET_NULL, # Si borro la categoría, la noticia queda sin categoría (no se borra)
         null=True, 
         related_name='noticias',
-        verbose_name="Categoría"
+        verbose_name="Categoría",
+        limit_choices_to={'tipo': 'NOTICIA'}
     )
 
     titulo = models.CharField(max_length=200, verbose_name="Título de la Noticia")
@@ -114,30 +125,16 @@ class Noticia(models.Model):
     def __str__(self):
         return self.titulo
     
-class CategoriaInvestigacion(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True, blank=True)
-
-    class Meta:
-        verbose_name = "Categoría de Investigación"
-        verbose_name_plural = "Categorías de Investigaciones"
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.nombre)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.nombre
 
 
 class Investigacion(models.Model):
     categoria = models.ForeignKey(
-        CategoriaInvestigacion, 
+        Categoria, 
         on_delete=models.SET_NULL, 
         null=True, 
         related_name='investigaciones',
-        verbose_name="Línea de Investigación"
+        verbose_name="Línea de Investigación",
+        limit_choices_to={'tipo': 'INVESTIGACION'}
     )
 
     titulo = models.CharField(max_length=200, verbose_name="Título de la Investigación")
@@ -219,24 +216,9 @@ class Testimonio(models.Model):
         return f"Opinión de {self.usuario.get_full_name() or self.usuario.username}"
     
     
-class CategoriaBlog(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True, blank=True)
-
-    class Meta:
-        verbose_name = "Categoría de Blog"
-        verbose_name_plural = "Categorías del Blog"
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.nombre)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.nombre
 
 class Blog(models.Model):
-    categoria = models.ForeignKey(CategoriaBlog, on_delete=models.SET_NULL, null=True, related_name='posts')
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='posts', limit_choices_to={'tipo': 'BLOG'})
     titulo = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     autor = models.CharField(max_length=100, default="Grupo Reina") # O ForeignKey a User
@@ -302,3 +284,4 @@ class Protocolo(models.Model):
 
     def __str__(self):
         return self.titulo
+    

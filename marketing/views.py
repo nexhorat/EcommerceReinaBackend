@@ -7,32 +7,61 @@ from rest_framework import filters
 from .models import (
     Servicio, 
     Noticia, 
-    CategoriaNoticia, 
-    Investigacion, 
-    CategoriaInvestigacion, 
+    Investigacion,  
     Certificacion, 
     Testimonio,
     Blog,
-    CategoriaBlog,
-    Protocolo
+    Protocolo,
+    Categoria
 )
 from .serializers import (
     ServicioCardSerializer, 
     ServicioDetailSerializer, 
     NoticiaDetailSerializer, 
     NoticiaCardSerializer, 
-    CategoriaNoticiaSerializer,
+    CategoriaSerializer,
     InvestigacionCardSerializer,
     InvestigacionDetailSerializer,
-    CategoriaInvestigacionSerializer,
     CertificacionSerializer,
     TestimonioSerializer,
     BlogCardSerializer,
     BlogDetailSerializer,
-    CategoriaBlogSerializer,
     ProtocoloDetailSerializer,
     ProtocoloCardSerializer
 )
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="Listar Categorías",
+        description="Obtiene todas las categorías. Filtra por 'tipo' para obtener solo Noticias, Blog, etc.",
+        parameters=[
+            OpenApiParameter(
+                name='tipo', 
+                description='Tipo de categoría (NOTICIA, INVESTIGACION, BLOG)', 
+                required=False, 
+                type=str
+            ),
+        ]
+    ),
+    retrieve=extend_schema(summary="Ver Categoría"),
+    create=extend_schema(summary="Crear Categoría", description="Solo Admin"),
+    update=extend_schema(summary="Editar Categoría", description="Solo Admin"),
+    destroy=extend_schema(summary="Eliminar Categoría", description="Solo Admin"),
+)
+class CategoriaViewSet(viewsets.ModelViewSet):
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
+    lookup_field = 'slug'
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tipo'] 
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+
+
 
 @extend_schema_view(
     # --- LECTURA (Público) ---
@@ -95,9 +124,9 @@ class ServicioViewSet(viewsets.ModelViewSet):
     destroy=extend_schema(summary="Eliminar Categoría", description="Solo Admin"),
 )
 class CategoriaNoticiaViewSet(viewsets.ModelViewSet):
-    queryset = CategoriaNoticia.objects.all()
+    queryset = Categoria.objects.all()
     lookup_field = 'slug'
-    serializer_class = CategoriaNoticiaSerializer
+    serializer_class = CategoriaSerializer
     permission_classes = [IsAdminUser]
 
 
@@ -156,8 +185,8 @@ class NoticiaViewSet(viewsets.ModelViewSet):
     destroy=extend_schema(summary="Eliminar Categoría Inv.", description="Solo Admin"),
 )
 class CategoriaInvestigacionViewSet(viewsets.ModelViewSet):
-    queryset = CategoriaInvestigacion.objects.all()
-    serializer_class = CategoriaInvestigacionSerializer
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
     permission_classes = [IsAdminUser] # Ajusta a AllowAny en get_permissions si quieres lectura pública
     lookup_field = 'slug'
 
@@ -255,8 +284,8 @@ class BlogViewSet(viewsets.ModelViewSet):
         return [IsAdminUser()]
 
 class CategoriaBlogViewSet(viewsets.ModelViewSet):
-    queryset = CategoriaBlog.objects.all()
-    serializer_class = CategoriaBlogSerializer
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
     permission_classes = [IsAdminUser] # Ajustar si quieres público
     lookup_field = 'slug'
     

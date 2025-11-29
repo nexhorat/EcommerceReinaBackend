@@ -1,14 +1,12 @@
 from django.contrib import admin
 from .models import (
     Servicio, 
-    CategoriaNoticia, 
     Noticia, 
     Investigacion, 
-    CategoriaInvestigacion,
     Testimonio,
     Blog,
-    CategoriaBlog,
-    Protocolo
+    Protocolo,
+    Categoria
 )
 
 @admin.register(Servicio)
@@ -17,9 +15,11 @@ class ServicioAdmin(admin.ModelAdmin):
     list_editable = ('orden',) # Permite cambiar el orden rápido sin entrar a editar
     prepopulated_fields = {'slug': ('titulo',)}
 
-@admin.register(CategoriaNoticia)
-class CategoriaNoticiaAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('nombre',)} # Llena el slug automáticamente al escribir el nombre
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'tipo', 'slug')
+    list_filter = ('tipo',) # Filtro lateral para ver solo noticias, blogs, etc.
+    prepopulated_fields = {'slug': ('nombre',)}
 
 @admin.register(Noticia)
 class NoticiaAdmin(admin.ModelAdmin):
@@ -29,11 +29,6 @@ class NoticiaAdmin(admin.ModelAdmin):
     list_filter = ('publicado', 'es_destacada', 'categoria', 'fecha_publicacion')
     search_fields = ('titulo', 'contenido')
     prepopulated_fields = {'slug': ('titulo',)}
-
-@admin.register(CategoriaInvestigacion)
-class CategoriaInvestigacionAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'slug')
-    prepopulated_fields = {'slug': ('nombre',)}
 
 @admin.register(Investigacion)
 class InvestigacionAdmin(admin.ModelAdmin):
@@ -47,11 +42,6 @@ class TestimonioAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'es_visible', 'created_at')
     list_editable = ('es_visible',)
     list_filter = ('es_visible', 'created_at')
-
-@admin.register(CategoriaBlog)
-class CategoriaBlogAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'slug')
-    prepopulated_fields = {'slug': ('nombre',)}
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
@@ -67,3 +57,4 @@ class ProtocoloAdmin(admin.ModelAdmin):
     list_editable = ('orden', 'es_visible')
     search_fields = ('titulo',)
     prepopulated_fields = {'slug': ('titulo',)}
+

@@ -3,15 +3,19 @@ from drf_spectacular.utils import extend_schema_field
 from .models import (
     Servicio, 
     Noticia, 
-    CategoriaNoticia, 
-    Investigacion, 
-    CategoriaInvestigacion, 
+    Investigacion,  
     Certificacion, 
     Testimonio, 
     Blog, 
-    CategoriaBlog,
-    Protocolo
+    Protocolo,
+    Categoria
 )
+
+
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = ['id', 'nombre', 'slug', 'tipo']
 
 class ServicioCardSerializer(serializers.ModelSerializer):
     """
@@ -40,11 +44,6 @@ class ServicioDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
 
-class CategoriaNoticiaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoriaNoticia
-        fields = '__all__'
-
 
 class NoticiaCardSerializer(serializers.ModelSerializer):
     # Truco: Traer el nombre de la categoría en lugar del ID para mostrarlo bonito en la card
@@ -65,10 +64,6 @@ class NoticiaDetailSerializer(serializers.ModelSerializer):
         fields = '__all__' 
         read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'fecha_publicacion']
 
-class CategoriaInvestigacionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoriaInvestigacion
-        fields = '__all__'
 
 class InvestigacionCardSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
@@ -116,11 +111,6 @@ class TestimonioSerializer(serializers.ModelSerializer):
         if obj.usuario.foto_perfil and hasattr(obj.usuario.foto_perfil, 'url'):
             return request.build_absolute_uri(obj.usuario.foto_perfil.url)
         return None
-    
-class CategoriaBlogSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoriaBlog
-        fields = '__all__'
 
 class BlogCardSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)

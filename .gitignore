@@ -1,6 +1,7 @@
-
 __pycache__/
 *.py[cod]
 db.sqlite3
 .venv
 .env
+deploy_key
+deploy_key.pub
