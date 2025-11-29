@@ -1,0 +1,3510 @@
+openapi: 3.0.3
+info:
+  title: Ecommerce Reina API
+  version: 1.0.0
+  description: API para gestión de Landing Page, Blog y Tienda Virtual
+paths:
+  /api/blog/:
+    get:
+      operationId: blog_list
+      summary: Listar Blog
+      parameters:
+      - in: query
+        name: categoria
+        schema:
+          type: integer
+      - in: query
+        name: es_destacado
+        schema:
+          type: boolean
+      - in: query
+        name: publicado
+        schema:
+          type: boolean
+      tags:
+      - blog
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogCard'
+          description: ''
+    post:
+      operationId: blog_create
+      description: Solo Admin
+      summary: Crear Post
+      tags:
+      - blog
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BlogDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlogDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogDetail'
+          description: ''
+  /api/blog/{slug}/:
+    get:
+      operationId: blog_retrieve
+      summary: Leer Artículo Completo
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - blog
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogDetail'
+          description: ''
+    put:
+      operationId: blog_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - blog
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BlogDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlogDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogDetail'
+          description: ''
+    patch:
+      operationId: blog_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - blog
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBlogDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBlogDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBlogDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogDetail'
+          description: ''
+    delete:
+      operationId: blog_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - blog
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/carrito/:
+    get:
+      operationId: carrito_list
+      description: Ver el carrito actual
+      tags:
+      - Tienda - Carrito
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Carrito'
+          description: ''
+  /api/carrito/{id}/eliminar/:
+    delete:
+      operationId: carrito_eliminar_destroy
+      description: El PK aquí es el ID del PRODUCTO a eliminar, no del Item
+      summary: Eliminar Item del Carrito
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: ID del Producto a eliminar
+        required: true
+      tags:
+      - Tienda - Carrito
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/carrito/agregar/:
+    post:
+      operationId: carrito_agregar_create
+      description: |-
+        Gestiona el carrito del usuario actual.
+        No usa ModelViewSet estándar porque la lógica es custom (get_or_create).
+      summary: Agregar Item
+      tags:
+      - Tienda - Carrito
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCarritoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ItemCarritoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ItemCarritoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrito'
+          description: ''
+  /api/categorias/:
+    get:
+      operationId: categorias_list
+      description: Obtiene todas las categorías. Filtra por 'tipo' para obtener solo
+        Noticias, Blog, etc.
+      summary: Listar Categorías
+      parameters:
+      - in: query
+        name: tipo
+        schema:
+          type: string
+        description: Tipo de categoría (NOTICIA, INVESTIGACION, BLOG)
+      tags:
+      - categorias
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+          description: ''
+    post:
+      operationId: categorias_create
+      description: Solo Admin
+      summary: Crear Categoría
+      tags:
+      - categorias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+  /api/categorias/{slug}/:
+    get:
+      operationId: categorias_retrieve
+      summary: Ver Categoría
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - categorias
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    put:
+      operationId: categorias_update
+      description: Solo Admin
+      summary: Editar Categoría
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - categorias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    patch:
+      operationId: categorias_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - categorias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoriaRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+          description: ''
+    delete:
+      operationId: categorias_destroy
+      description: Solo Admin
+      summary: Eliminar Categoría
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - categorias
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/certificaciones/:
+    get:
+      operationId: certificaciones_list
+      description: Muestra los logos y logros.
+      summary: Listar Certificaciones
+      tags:
+      - certificaciones
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certificacion'
+          description: ''
+    post:
+      operationId: certificaciones_create
+      description: Sube el logo y opcionalmente la URL de validación.
+      summary: Crear Certificación
+      tags:
+      - certificaciones
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CertificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CertificacionRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificacion'
+          description: ''
+  /api/certificaciones/{id}/:
+    get:
+      operationId: certificaciones_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Certificación /
+          Logro.
+        required: true
+      tags:
+      - certificaciones
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificacion'
+          description: ''
+    put:
+      operationId: certificaciones_update
+      summary: Editar Certificación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Certificación /
+          Logro.
+        required: true
+      tags:
+      - certificaciones
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CertificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CertificacionRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificacionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificacion'
+          description: ''
+    patch:
+      operationId: certificaciones_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Certificación /
+          Logro.
+        required: true
+      tags:
+      - certificaciones
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCertificacionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCertificacionRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCertificacionRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificacion'
+          description: ''
+    delete:
+      operationId: certificaciones_destroy
+      summary: Eliminar Certificación
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Certificación /
+          Logro.
+        required: true
+      tags:
+      - certificaciones
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/favoritos/:
+    get:
+      operationId: favoritos_list
+      tags:
+      - Tienda - Favoritos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Favorito'
+          description: ''
+    post:
+      operationId: favoritos_create
+      tags:
+      - Tienda - Favoritos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoritoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FavoritoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FavoritoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorito'
+          description: ''
+  /api/favoritos/{id}/:
+    get:
+      operationId: favoritos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este favorito.
+        required: true
+      tags:
+      - Tienda - Favoritos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorito'
+          description: ''
+    put:
+      operationId: favoritos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este favorito.
+        required: true
+      tags:
+      - Tienda - Favoritos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoritoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FavoritoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FavoritoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorito'
+          description: ''
+    patch:
+      operationId: favoritos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este favorito.
+        required: true
+      tags:
+      - Tienda - Favoritos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFavoritoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFavoritoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFavoritoRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorito'
+          description: ''
+    delete:
+      operationId: favoritos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este favorito.
+        required: true
+      tags:
+      - Tienda - Favoritos
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/investigaciones/:
+    get:
+      operationId: investigaciones_list
+      description: Lista ligera. Filtra por ?categoria=ID o ?es_destacada=true
+      summary: Listar Investigaciones (Cards)
+      parameters:
+      - in: query
+        name: categoria
+        schema:
+          type: integer
+      - in: query
+        name: es_destacada
+        schema:
+          type: boolean
+      - in: query
+        name: publicado
+        schema:
+          type: boolean
+      tags:
+      - investigaciones
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvestigacionCard'
+          description: ''
+    post:
+      operationId: investigaciones_create
+      description: Solo Admin. Soporta carga de archivos.
+      summary: Publicar Investigación
+      tags:
+      - investigaciones
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvestigacionDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvestigacionDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigacionDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigacionDetail'
+          description: ''
+  /api/investigaciones/{slug}/:
+    get:
+      operationId: investigaciones_retrieve
+      description: Incluye PDF y HTML.
+      summary: Ver Investigación Completa
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - investigaciones
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigacionDetail'
+          description: ''
+    put:
+      operationId: investigaciones_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - investigaciones
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvestigacionDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvestigacionDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigacionDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigacionDetail'
+          description: ''
+    patch:
+      operationId: investigaciones_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - investigaciones
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInvestigacionDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInvestigacionDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInvestigacionDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigacionDetail'
+          description: ''
+    delete:
+      operationId: investigaciones_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - investigaciones
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/noticias/:
+    get:
+      operationId: noticias_list
+      description: Obtiene las noticias ordenadas por fecha. Soporta filtrado por
+        categoría.
+      summary: Listar Noticias (Cards)
+      parameters:
+      - in: query
+        name: categoria
+        schema:
+          type: integer
+        description: ID de la categoría para filtrar noticias
+      - in: query
+        name: es_destacada
+        schema:
+          type: boolean
+        description: Filtrar por true/false para mostrar solo destacadas
+      - in: query
+        name: publicado
+        schema:
+          type: boolean
+      tags:
+      - noticias
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoticiaCard'
+          description: ''
+    post:
+      operationId: noticias_create
+      description: Solo Admin. Recuerda enviar imagen_card e imagen_banner.
+      summary: Publicar Noticia
+      tags:
+      - noticias
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoticiaDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoticiaDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticiaDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticiaDetail'
+          description: ''
+  /api/noticias/{slug}/:
+    get:
+      operationId: noticias_retrieve
+      description: Trae el contenido completo, incluyendo el texto enriquecido (HTML)
+        y el banner.
+      summary: Leer Noticia Completa
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - noticias
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticiaDetail'
+          description: ''
+    put:
+      operationId: noticias_update
+      description: Solo Admin.
+      summary: Editar Noticia
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - noticias
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoticiaDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoticiaDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticiaDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticiaDetail'
+          description: ''
+    patch:
+      operationId: noticias_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - noticias
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNoticiaDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticiaDetail'
+          description: ''
+    delete:
+      operationId: noticias_destroy
+      description: Solo Admin.
+      summary: Eliminar Noticia
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - noticias
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/pedidos/:
+    get:
+      operationId: pedidos_list
+      tags:
+      - Tienda - Pedidos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pedido'
+          description: ''
+    post:
+      operationId: pedidos_create
+      summary: Checkout (Crear Pedido desde Carrito)
+      tags:
+      - Tienda - Pedidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PedidoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PedidoRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pedido'
+          description: ''
+  /api/pedidos/{id}/:
+    get:
+      operationId: pedidos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este pedido.
+        required: true
+      tags:
+      - Tienda - Pedidos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pedido'
+          description: ''
+  /api/productos/:
+    get:
+      operationId: productos_list
+      parameters:
+      - in: query
+        name: categoria
+        schema:
+          type: integer
+      - in: query
+        name: es_destacado
+        schema:
+          type: boolean
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - Tienda - Productos
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoCard'
+          description: ''
+  /api/productos/{slug}/:
+    get:
+      operationId: productos_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Tienda - Productos
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoDetail'
+          description: ''
+  /api/productos/recomendaciones/:
+    get:
+      operationId: productos_recomendaciones_retrieve
+      description: Retorna productos destacados o aleatorios como recomendación.
+      tags:
+      - Tienda - Productos
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoCard'
+          description: ''
+  /api/protocolos/:
+    get:
+      operationId: protocolos_list
+      description: Devuelve la lista de cultivos para la rejilla principal.
+      summary: Listar Protocolos (Grid)
+      parameters:
+      - name: search
+        required: false
+        in: query
+        description: Un término de búsqueda.
+        schema:
+          type: string
+      tags:
+      - protocolos
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProtocoloCard'
+          description: ''
+    post:
+      operationId: protocolos_create
+      description: Solo Admin. Requiere PDF.
+      summary: Crear Protocolo
+      tags:
+      - protocolos
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProtocoloDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProtocoloDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtocoloDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocoloDetail'
+          description: ''
+  /api/protocolos/{slug}/:
+    get:
+      operationId: protocolos_retrieve
+      description: Devuelve la info técnica y el link del PDF.
+      summary: Ver Detalle Protocolo (Modal)
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - protocolos
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocoloDetail'
+          description: ''
+    put:
+      operationId: protocolos_update
+      description: Solo Admin.
+      summary: Editar Protocolo
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - protocolos
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProtocoloDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProtocoloDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProtocoloDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocoloDetail'
+          description: ''
+    patch:
+      operationId: protocolos_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - protocolos
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProtocoloDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProtocoloDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProtocoloDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocoloDetail'
+          description: ''
+    delete:
+      operationId: protocolos_destroy
+      description: Solo Admin.
+      summary: Eliminar Protocolo
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - protocolos
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/servicios/:
+    get:
+      operationId: servicios_list
+      description: Obtiene la lista ligera para el Landing.
+      summary: Listar Servicios (Cards)
+      tags:
+      - servicios
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServicioCard'
+          description: ''
+    post:
+      operationId: servicios_create
+      description: Crea un servicio nuevo. Requiere autenticación.
+      summary: Crear Nuevo Servicio
+      tags:
+      - servicios
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ServicioDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ServicioDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicioDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicioDetail'
+          description: ''
+  /api/servicios/{slug}/:
+    get:
+      operationId: servicios_retrieve
+      description: Obtiene toda la info completa del servicio por su slug.
+      summary: Ver Detalle del Servicio
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+          description: Identificador para la URL
+        required: true
+      tags:
+      - servicios
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicioDetail'
+          description: ''
+    put:
+      operationId: servicios_update
+      description: Reemplaza toda la información del servicio.
+      summary: Actualizar Servicio (Completo)
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+          description: Identificador para la URL
+        required: true
+      tags:
+      - servicios
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ServicioDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ServicioDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicioDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicioDetail'
+          description: ''
+    patch:
+      operationId: servicios_partial_update
+      description: Actualiza solo algunos campos del servicio.
+      summary: Actualizar Servicio (Parcial)
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+          description: Identificador para la URL
+        required: true
+      tags:
+      - servicios
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedServicioDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedServicioDetailRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServicioDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicioDetail'
+          description: ''
+    delete:
+      operationId: servicios_destroy
+      description: Borra un servicio permanentemente.
+      summary: Eliminar Servicio
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+          description: Identificador para la URL
+        required: true
+      tags:
+      - servicios
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/testimonios/:
+    get:
+      operationId: testimonios_list
+      description: Muestra solo las reseñas que han sido marcadas como visibles por
+        el admin.
+      summary: Listar Testimonios Aprobados
+      tags:
+      - testimonios
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Testimonio'
+          description: ''
+    post:
+      operationId: testimonios_create
+      description: Requiere estar autenticado (Token). El usuario se asigna automáticamente.
+      summary: Crear un Testimonio
+      tags:
+      - testimonios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestimonioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TestimonioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TestimonioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testimonio'
+          description: ''
+  /api/testimonios/{id}/:
+    get:
+      operationId: testimonios_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Testimonio / Reseña.
+        required: true
+      tags:
+      - testimonios
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testimonio'
+          description: ''
+    put:
+      operationId: testimonios_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Testimonio / Reseña.
+        required: true
+      tags:
+      - testimonios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestimonioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TestimonioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TestimonioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testimonio'
+          description: ''
+    patch:
+      operationId: testimonios_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Testimonio / Reseña.
+        required: true
+      tags:
+      - testimonios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTestimonioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTestimonioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTestimonioRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testimonio'
+          description: ''
+    delete:
+      operationId: testimonios_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este Testimonio / Reseña.
+        required: true
+      tags:
+      - testimonios
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/usuarios/login/:
+    post:
+      operationId: usuarios_login_create
+      description: Envía email y password para obtener los tokens 'access' y 'refresh'.
+      summary: Iniciar Sesión (Obtener Tokens)
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          description: Tokens de acceso y refresco generados correctamente.
+        '401':
+          description: Credenciales inválidas (email o contraseña incorrectos).
+  /api/usuarios/perfil/:
+    get:
+      operationId: usuarios_perfil_retrieve
+      description: Permite al usuario logueado ver sus datos, cambiar nombre/teléfono
+        y SUBIR SU FOTO.
+      summary: Ver o Editar Mi Perfil
+      tags:
+      - usuarios
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          description: No autenticado. Token faltante o inválido.
+        '400':
+          description: Datos de entrada inválidos.
+    put:
+      operationId: usuarios_perfil_update
+      description: Permite al usuario logueado ver sus datos, cambiar nombre/teléfono
+        y SUBIR SU FOTO.
+      summary: Ver o Editar Mi Perfil
+      tags:
+      - usuarios
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          description: No autenticado. Token faltante o inválido.
+        '400':
+          description: Datos de entrada inválidos.
+    patch:
+      operationId: usuarios_perfil_partial_update
+      description: Permite al usuario logueado ver sus datos, cambiar nombre/teléfono
+        y SUBIR SU FOTO.
+      summary: Ver o Editar Mi Perfil
+      tags:
+      - usuarios
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          description: No autenticado. Token faltante o inválido.
+        '400':
+          description: Datos de entrada inválidos.
+  /api/usuarios/perfil/cambiar-password/:
+    put:
+      operationId: usuarios_perfil_cambiar_password_update
+      description: Requiere la contraseña anterior y la nueva repetida dos veces.
+      summary: Cambiar Contraseña
+      tags:
+      - usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordChangeResponse'
+          description: ''
+    patch:
+      operationId: usuarios_perfil_cambiar_password_partial_update
+      description: Requiere la contraseña anterior y la nueva repetida dos veces.
+      summary: Cambiar Contraseña
+      tags:
+      - usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedChangePasswordRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordChangeResponse'
+          description: ''
+  /api/usuarios/register/:
+    post:
+      operationId: usuarios_register_create
+      description: Crea un usuario con rol USER por defecto. Requiere email, nombres
+        y contraseña.
+      summary: Registrar un nuevo usuario
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: Usuario creado exitosamente (incluye mensaje 'detail').
+        '400':
+          description: Error de validación (email ya existe o contraseña inválida).
+  /api/usuarios/token/refresh/:
+    post:
+      operationId: usuarios_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+components:
+  schemas:
+    BlogCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        fecha_publicacion:
+          type: string
+          format: date
+          readOnly: true
+        imagen_card:
+          type: string
+          format: uri
+        resumen:
+          type: string
+          maxLength: 400
+        categoria_nombre:
+          type: string
+          readOnly: true
+        autor:
+          type: string
+          maxLength: 100
+      required:
+      - categoria_nombre
+      - fecha_publicacion
+      - id
+      - imagen_card
+      - resumen
+      - titulo
+    BlogDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        categoria_nombre:
+          type: string
+          readOnly: true
+        titulo:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        autor:
+          type: string
+          maxLength: 100
+        fecha_publicacion:
+          type: string
+          format: date
+          readOnly: true
+        imagen_card:
+          type: string
+          format: uri
+        imagen_banner:
+          type: string
+          format: uri
+          nullable: true
+          title: Banner
+        resumen:
+          type: string
+          maxLength: 400
+        contenido:
+          type: string
+          title: Contenido del Artículo
+        publicado:
+          type: boolean
+        es_destacado:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        categoria:
+          type: integer
+          nullable: true
+      required:
+      - categoria_nombre
+      - contenido
+      - created_at
+      - fecha_publicacion
+      - id
+      - imagen_card
+      - resumen
+      - slug
+      - titulo
+      - updated_at
+    BlogDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          maxLength: 200
+        autor:
+          type: string
+          minLength: 1
+          maxLength: 100
+        imagen_card:
+          type: string
+          format: binary
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+          title: Banner
+        resumen:
+          type: string
+          minLength: 1
+          maxLength: 400
+        contenido:
+          type: string
+          minLength: 1
+          title: Contenido del Artículo
+        publicado:
+          type: boolean
+        es_destacado:
+          type: boolean
+        categoria:
+          type: integer
+          nullable: true
+      required:
+      - contenido
+      - imagen_card
+      - resumen
+      - titulo
+    Carrito:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemCarrito'
+          readOnly: true
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - id
+      - items
+      - total
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/TipoEnum'
+          title: Tipo de Contenido
+      required:
+      - id
+      - nombre
+      - slug
+      - tipo
+    CategoriaRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/TipoEnum'
+          title: Tipo de Contenido
+      required:
+      - nombre
+      - slug
+      - tipo
+    Certificacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          title: Nombre de la Certificación/Logro
+          maxLength: 150
+        descripcion:
+          type: string
+          title: Descripción Corta
+          maxLength: 300
+        logo:
+          type: string
+          format: uri
+          title: Logo o Ícono
+        url_validacion:
+          type: string
+          format: uri
+          nullable: true
+          title: Enlace de Verificación (URL)
+          maxLength: 200
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: 1 aparece primero, 2 después...
+        es_visible:
+          type: boolean
+          title: ¿Visible en la web?
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - logo
+      - nombre
+    CertificacionRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          title: Nombre de la Certificación/Logro
+          maxLength: 150
+        descripcion:
+          type: string
+          title: Descripción Corta
+          maxLength: 300
+        logo:
+          type: string
+          format: binary
+          title: Logo o Ícono
+        url_validacion:
+          type: string
+          format: uri
+          nullable: true
+          title: Enlace de Verificación (URL)
+          maxLength: 200
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: 1 aparece primero, 2 después...
+        es_visible:
+          type: boolean
+          title: ¿Visible en la web?
+      required:
+      - logo
+      - nombre
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Contraseña actual
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Nueva contraseña
+        confirm_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Confirmar nueva contraseña
+      required:
+      - confirm_password
+      - new_password
+      - old_password
+    DetallePedido:
+      type: object
+      properties:
+        producto_nombre:
+          type: string
+          readOnly: true
+        cantidad:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - cantidad
+      - precio_unitario
+      - producto_nombre
+    DetallePedidoRequest:
+      type: object
+      properties:
+        cantidad:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - cantidad
+      - precio_unitario
+    EstadoEnum:
+      enum:
+      - PENDIENTE
+      - PAGADO
+      - ENVIADO
+      - CANCELADO
+      type: string
+      description: |-
+        * `PENDIENTE` - Pendiente
+        * `PAGADO` - Pagado
+        * `ENVIADO` - Enviado
+        * `CANCELADO` - Cancelado
+    Favorito:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        producto:
+          allOf:
+          - $ref: '#/components/schemas/ProductoCard'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - producto
+    FavoritoRequest:
+      type: object
+      properties:
+        producto_id:
+          type: integer
+          writeOnly: true
+      required:
+      - producto_id
+    InvestigacionCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          title: Título de la Investigación
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        fecha_publicacion:
+          type: string
+          format: date
+          title: Fecha de Publicación
+        imagen_card:
+          type: string
+          format: uri
+          title: Imagen Pequeña (Card)
+        resumen:
+          type: string
+          title: Resumen Ejecutivo
+          maxLength: 500
+        categoria_nombre:
+          type: string
+          readOnly: true
+        autor:
+          type: string
+          title: Investigador/Autor
+          maxLength: 100
+      required:
+      - categoria_nombre
+      - fecha_publicacion
+      - id
+      - imagen_card
+      - resumen
+      - titulo
+    InvestigacionDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        categoria_nombre:
+          type: string
+          readOnly: true
+        titulo:
+          type: string
+          title: Título de la Investigación
+          maxLength: 200
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        autor:
+          type: string
+          title: Investigador/Autor
+          maxLength: 100
+        fecha_publicacion:
+          type: string
+          format: date
+          title: Fecha de Publicación
+        imagen_card:
+          type: string
+          format: uri
+          title: Imagen Pequeña (Card)
+        imagen_banner:
+          type: string
+          format: uri
+          nullable: true
+          title: Banner Grande
+        archivo_pdf:
+          type: string
+          format: uri
+          nullable: true
+          title: PDF Completo (Opcional)
+        resumen:
+          type: string
+          title: Resumen Ejecutivo
+          maxLength: 500
+        contenido:
+          type: string
+          title: Detalles de la Investigación
+        publicado:
+          type: boolean
+        es_destacada:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        categoria:
+          type: integer
+          nullable: true
+          title: Línea de Investigación
+      required:
+      - categoria_nombre
+      - contenido
+      - created_at
+      - fecha_publicacion
+      - id
+      - imagen_card
+      - resumen
+      - slug
+      - titulo
+      - updated_at
+    InvestigacionDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: Título de la Investigación
+          maxLength: 200
+        autor:
+          type: string
+          minLength: 1
+          title: Investigador/Autor
+          maxLength: 100
+        fecha_publicacion:
+          type: string
+          format: date
+          title: Fecha de Publicación
+        imagen_card:
+          type: string
+          format: binary
+          title: Imagen Pequeña (Card)
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+          title: Banner Grande
+        archivo_pdf:
+          type: string
+          format: binary
+          nullable: true
+          title: PDF Completo (Opcional)
+        resumen:
+          type: string
+          minLength: 1
+          title: Resumen Ejecutivo
+          maxLength: 500
+        contenido:
+          type: string
+          minLength: 1
+          title: Detalles de la Investigación
+        publicado:
+          type: boolean
+        es_destacada:
+          type: boolean
+        categoria:
+          type: integer
+          nullable: true
+          title: Línea de Investigación
+      required:
+      - contenido
+      - fecha_publicacion
+      - imagen_card
+      - resumen
+      - titulo
+    ItemCarrito:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        producto:
+          allOf:
+          - $ref: '#/components/schemas/ProductoCard'
+          readOnly: true
+        cantidad:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - id
+      - producto
+      - subtotal
+    ItemCarritoRequest:
+      type: object
+      properties:
+        producto_id:
+          type: integer
+          writeOnly: true
+        cantidad:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - producto_id
+    NoticiaCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          title: Título de la Noticia
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        fecha_publicacion:
+          type: string
+          format: date
+          readOnly: true
+          title: Fecha de Publicación
+        imagen_card:
+          type: string
+          format: uri
+          title: Imagen Pequeña (Card)
+        resumen:
+          type: string
+          title: Resumen corto (Intro)
+          maxLength: 400
+        categoria:
+          type: integer
+          nullable: true
+          title: Categoría
+        categoria_nombre:
+          type: string
+          readOnly: true
+        autor:
+          type: string
+          maxLength: 100
+      required:
+      - categoria_nombre
+      - fecha_publicacion
+      - id
+      - imagen_card
+      - resumen
+      - titulo
+    NoticiaDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        categoria_nombre:
+          type: string
+          readOnly: true
+        titulo:
+          type: string
+          title: Título de la Noticia
+          maxLength: 200
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        autor:
+          type: string
+          maxLength: 100
+        fecha_publicacion:
+          type: string
+          format: date
+          readOnly: true
+          title: Fecha de Publicación
+        imagen_card:
+          type: string
+          format: uri
+          title: Imagen Pequeña (Card)
+        imagen_banner:
+          type: string
+          format: uri
+          nullable: true
+          title: Banner Grande
+        resumen:
+          type: string
+          title: Resumen corto (Intro)
+          maxLength: 400
+        contenido:
+          type: string
+          title: Contenido Completo
+        publicado:
+          type: boolean
+          title: ¿Publicado?
+        es_destacada:
+          type: boolean
+          title: ¿Es Destacada?
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        categoria:
+          type: integer
+          nullable: true
+          title: Categoría
+      required:
+      - categoria_nombre
+      - contenido
+      - created_at
+      - fecha_publicacion
+      - id
+      - imagen_card
+      - resumen
+      - slug
+      - titulo
+      - updated_at
+    NoticiaDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: Título de la Noticia
+          maxLength: 200
+        autor:
+          type: string
+          minLength: 1
+          maxLength: 100
+        imagen_card:
+          type: string
+          format: binary
+          title: Imagen Pequeña (Card)
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+          title: Banner Grande
+        resumen:
+          type: string
+          minLength: 1
+          title: Resumen corto (Intro)
+          maxLength: 400
+        contenido:
+          type: string
+          minLength: 1
+          title: Contenido Completo
+        publicado:
+          type: boolean
+          title: ¿Publicado?
+        es_destacada:
+          type: boolean
+          title: ¿Es Destacada?
+        categoria:
+          type: integer
+          nullable: true
+          title: Categoría
+      required:
+      - contenido
+      - imagen_card
+      - resumen
+      - titulo
+    PasswordChangeResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          default: Contraseña actualizada correctamente.
+    PatchedBlogDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          maxLength: 200
+        autor:
+          type: string
+          minLength: 1
+          maxLength: 100
+        imagen_card:
+          type: string
+          format: binary
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+          title: Banner
+        resumen:
+          type: string
+          minLength: 1
+          maxLength: 400
+        contenido:
+          type: string
+          minLength: 1
+          title: Contenido del Artículo
+        publicado:
+          type: boolean
+        es_destacado:
+          type: boolean
+        categoria:
+          type: integer
+          nullable: true
+    PatchedCategoriaRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        tipo:
+          allOf:
+          - $ref: '#/components/schemas/TipoEnum'
+          title: Tipo de Contenido
+    PatchedCertificacionRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          title: Nombre de la Certificación/Logro
+          maxLength: 150
+        descripcion:
+          type: string
+          title: Descripción Corta
+          maxLength: 300
+        logo:
+          type: string
+          format: binary
+          title: Logo o Ícono
+        url_validacion:
+          type: string
+          format: uri
+          nullable: true
+          title: Enlace de Verificación (URL)
+          maxLength: 200
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: 1 aparece primero, 2 después...
+        es_visible:
+          type: boolean
+          title: ¿Visible en la web?
+    PatchedChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Contraseña actual
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Nueva contraseña
+        confirm_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Confirmar nueva contraseña
+    PatchedFavoritoRequest:
+      type: object
+      properties:
+        producto_id:
+          type: integer
+          writeOnly: true
+    PatchedInvestigacionDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: Título de la Investigación
+          maxLength: 200
+        autor:
+          type: string
+          minLength: 1
+          title: Investigador/Autor
+          maxLength: 100
+        fecha_publicacion:
+          type: string
+          format: date
+          title: Fecha de Publicación
+        imagen_card:
+          type: string
+          format: binary
+          title: Imagen Pequeña (Card)
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+          title: Banner Grande
+        archivo_pdf:
+          type: string
+          format: binary
+          nullable: true
+          title: PDF Completo (Opcional)
+        resumen:
+          type: string
+          minLength: 1
+          title: Resumen Ejecutivo
+          maxLength: 500
+        contenido:
+          type: string
+          minLength: 1
+          title: Detalles de la Investigación
+        publicado:
+          type: boolean
+        es_destacada:
+          type: boolean
+        categoria:
+          type: integer
+          nullable: true
+          title: Línea de Investigación
+    PatchedNoticiaDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: Título de la Noticia
+          maxLength: 200
+        autor:
+          type: string
+          minLength: 1
+          maxLength: 100
+        imagen_card:
+          type: string
+          format: binary
+          title: Imagen Pequeña (Card)
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+          title: Banner Grande
+        resumen:
+          type: string
+          minLength: 1
+          title: Resumen corto (Intro)
+          maxLength: 400
+        contenido:
+          type: string
+          minLength: 1
+          title: Contenido Completo
+        publicado:
+          type: boolean
+          title: ¿Publicado?
+        es_destacada:
+          type: boolean
+          title: ¿Es Destacada?
+        categoria:
+          type: integer
+          nullable: true
+          title: Categoría
+    PatchedProtocoloDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: 'Nombre del Cultivo (ej: Batata)'
+          maxLength: 150
+        imagen_card:
+          type: string
+          format: binary
+          title: Foto del Cultivo
+        descripcion_tecnica:
+          type: string
+          minLength: 1
+          title: Descripción Técnica / Intro
+          maxLength: 500
+        resultados:
+          type: string
+          title: Resultados Esperados
+          maxLength: 300
+        contenido:
+          type: string
+          minLength: 1
+          title: Pasos del Protocolo
+        archivo_pdf:
+          type: string
+          format: binary
+          title: PDF Descargable
+          description: Este es el archivo que bajará el usuario al dar clic en 'Descargar
+            Protocolo'
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: Orden de aparición en la rejilla
+        es_visible:
+          type: boolean
+    PatchedServicioDetailRequest:
+      type: object
+      description: |-
+        Serializador completo para la página de detalle.
+        Incluye todo el contenido enriquecido (Rich Text).
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: Título del Servicio
+          maxLength: 100
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Orden de aparición
+          description: 'Menor número aparece primero (ej: 1, 2, 3...)'
+        imagen_card:
+          type: string
+          format: binary
+          title: Imagen Pequeña
+        descripcion_corta:
+          type: string
+          minLength: 1
+          title: Descripción Corta (card)
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+        resumen:
+          type: string
+          minLength: 1
+          title: Summary / Resumen
+        que_obtienes:
+          type: string
+          minLength: 1
+          title: What you get / Qué obtienes
+        por_que_importa:
+          type: string
+          minLength: 1
+          title: Why it matters / Por qué importa
+        como_funciona:
+          type: string
+          minLength: 1
+          title: How it works / Cómo funciona
+        adicionales:
+          type: string
+          minLength: 1
+          nullable: true
+          title: Optional Add-ons
+    PatchedTestimonioRequest:
+      type: object
+      properties:
+        contenido:
+          type: string
+          minLength: 1
+          title: Reseña / Opinión
+          maxLength: 300
+        cargo_empresa:
+          type: string
+          title: Cargo / Empresa (Opcional)
+          maxLength: 100
+    PatchedUserProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          title: Nombres
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          nullable: true
+          maxLength: 20
+        foto_perfil:
+          type: string
+          format: binary
+          nullable: true
+          title: Foto de Perfil
+    Pedido:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        estado:
+          allOf:
+          - $ref: '#/components/schemas/EstadoEnum'
+          readOnly: true
+        metodo_pago:
+          type: string
+          maxLength: 50
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        detalles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetallePedido'
+          readOnly: true
+      required:
+      - created_at
+      - detalles
+      - estado
+      - id
+      - total
+    PedidoRequest:
+      type: object
+      properties:
+        metodo_pago:
+          type: string
+          maxLength: 50
+    ProductoCard:
+      type: object
+      description: Vista ligera para listas
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        precio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        imagen_principal:
+          type: string
+          format: uri
+        es_destacado:
+          type: boolean
+        categoria_nombre:
+          type: string
+          readOnly: true
+      required:
+      - categoria_nombre
+      - id
+      - imagen_principal
+      - nombre
+      - precio
+      - slug
+    ProductoCardRequest:
+      type: object
+      description: Vista ligera para listas
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        precio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        imagen_principal:
+          type: string
+          format: binary
+        es_destacado:
+          type: boolean
+      required:
+      - imagen_principal
+      - nombre
+      - precio
+      - slug
+    ProductoDetail:
+      type: object
+      description: Vista completa para detalle
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        categoria_nombre:
+          type: string
+          readOnly: true
+        relacionados:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductoCard'
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+        precio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        es_destacado:
+          type: boolean
+        imagen_principal:
+          type: string
+          format: uri
+        categoria:
+          type: integer
+          nullable: true
+      required:
+      - categoria_nombre
+      - descripcion
+      - id
+      - imagen_principal
+      - nombre
+      - precio
+      - relacionados
+      - slug
+    ProtocoloCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          title: 'Nombre del Cultivo (ej: Batata)'
+          maxLength: 150
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        imagen_card:
+          type: string
+          format: uri
+          title: Foto del Cultivo
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: Orden de aparición en la rejilla
+      required:
+      - id
+      - imagen_card
+      - titulo
+    ProtocoloDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          title: 'Nombre del Cultivo (ej: Batata)'
+          maxLength: 150
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        imagen_card:
+          type: string
+          format: uri
+          title: Foto del Cultivo
+        descripcion_tecnica:
+          type: string
+          title: Descripción Técnica / Intro
+          maxLength: 500
+        resultados:
+          type: string
+          title: Resultados Esperados
+          maxLength: 300
+        contenido:
+          type: string
+          title: Pasos del Protocolo
+        archivo_pdf:
+          type: string
+          format: uri
+          title: PDF Descargable
+          description: Este es el archivo que bajará el usuario al dar clic en 'Descargar
+            Protocolo'
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: Orden de aparición en la rejilla
+        es_visible:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - archivo_pdf
+      - contenido
+      - created_at
+      - descripcion_tecnica
+      - id
+      - imagen_card
+      - slug
+      - titulo
+      - updated_at
+    ProtocoloDetailRequest:
+      type: object
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: 'Nombre del Cultivo (ej: Batata)'
+          maxLength: 150
+        imagen_card:
+          type: string
+          format: binary
+          title: Foto del Cultivo
+        descripcion_tecnica:
+          type: string
+          minLength: 1
+          title: Descripción Técnica / Intro
+          maxLength: 500
+        resultados:
+          type: string
+          title: Resultados Esperados
+          maxLength: 300
+        contenido:
+          type: string
+          minLength: 1
+          title: Pasos del Protocolo
+        archivo_pdf:
+          type: string
+          format: binary
+          title: PDF Descargable
+          description: Este es el archivo que bajará el usuario al dar clic en 'Descargar
+            Protocolo'
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          description: Orden de aparición en la rejilla
+        es_visible:
+          type: boolean
+      required:
+      - archivo_pdf
+      - contenido
+      - descripcion_tecnica
+      - imagen_card
+      - titulo
+    ServicioCard:
+      type: object
+      description: |-
+        Serializador optimizado para la lista (Landing Page).
+        Solo envía la información visual de la tarjeta.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          title: Título del Servicio
+          maxLength: 100
+        slug:
+          type: string
+          description: Identificador para la URL
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        imagen_card:
+          type: string
+          format: uri
+          title: Imagen Pequeña
+        descripcion_corta:
+          type: string
+          title: Descripción Corta (card)
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Orden de aparición
+          description: 'Menor número aparece primero (ej: 1, 2, 3...)'
+      required:
+      - descripcion_corta
+      - id
+      - imagen_card
+      - titulo
+    ServicioDetail:
+      type: object
+      description: |-
+        Serializador completo para la página de detalle.
+        Incluye todo el contenido enriquecido (Rich Text).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        titulo:
+          type: string
+          title: Título del Servicio
+          maxLength: 100
+        slug:
+          type: string
+          readOnly: true
+          description: Identificador para la URL
+          pattern: ^[-a-zA-Z0-9_]+$
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Orden de aparición
+          description: 'Menor número aparece primero (ej: 1, 2, 3...)'
+        imagen_card:
+          type: string
+          format: uri
+          title: Imagen Pequeña
+        descripcion_corta:
+          type: string
+          title: Descripción Corta (card)
+        imagen_banner:
+          type: string
+          format: uri
+          nullable: true
+        resumen:
+          type: string
+          title: Summary / Resumen
+        que_obtienes:
+          type: string
+          title: What you get / Qué obtienes
+        por_que_importa:
+          type: string
+          title: Why it matters / Por qué importa
+        como_funciona:
+          type: string
+          title: How it works / Cómo funciona
+        adicionales:
+          type: string
+          nullable: true
+          title: Optional Add-ons
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - como_funciona
+      - created_at
+      - descripcion_corta
+      - id
+      - imagen_card
+      - por_que_importa
+      - que_obtienes
+      - resumen
+      - slug
+      - titulo
+    ServicioDetailRequest:
+      type: object
+      description: |-
+        Serializador completo para la página de detalle.
+        Incluye todo el contenido enriquecido (Rich Text).
+      properties:
+        titulo:
+          type: string
+          minLength: 1
+          title: Título del Servicio
+          maxLength: 100
+        orden:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Orden de aparición
+          description: 'Menor número aparece primero (ej: 1, 2, 3...)'
+        imagen_card:
+          type: string
+          format: binary
+          title: Imagen Pequeña
+        descripcion_corta:
+          type: string
+          minLength: 1
+          title: Descripción Corta (card)
+        imagen_banner:
+          type: string
+          format: binary
+          nullable: true
+        resumen:
+          type: string
+          minLength: 1
+          title: Summary / Resumen
+        que_obtienes:
+          type: string
+          minLength: 1
+          title: What you get / Qué obtienes
+        por_que_importa:
+          type: string
+          minLength: 1
+          title: Why it matters / Por qué importa
+        como_funciona:
+          type: string
+          minLength: 1
+          title: How it works / Cómo funciona
+        adicionales:
+          type: string
+          minLength: 1
+          nullable: true
+          title: Optional Add-ons
+      required:
+      - como_funciona
+      - descripcion_corta
+      - imagen_card
+      - por_que_importa
+      - que_obtienes
+      - resumen
+      - titulo
+    Testimonio:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        contenido:
+          type: string
+          title: Reseña / Opinión
+          maxLength: 300
+        cargo_empresa:
+          type: string
+          title: Cargo / Empresa (Opcional)
+          maxLength: 100
+        usuario_nombre:
+          type: string
+          readOnly: true
+        usuario_foto:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - contenido
+      - created_at
+      - id
+      - usuario_foto
+      - usuario_nombre
+    TestimonioRequest:
+      type: object
+      properties:
+        contenido:
+          type: string
+          minLength: 1
+          title: Reseña / Opinión
+          maxLength: 300
+        cargo_empresa:
+          type: string
+          title: Cargo / Empresa (Opcional)
+          maxLength: 100
+      required:
+      - contenido
+    TipoEnum:
+      enum:
+      - NOTICIA
+      - INVESTIGACION
+      - BLOG
+      - PRODUCTO
+      type: string
+      description: |-
+        * `NOTICIA` - Noticia
+        * `INVESTIGACION` - Investigación
+        * `BLOG` - Blog
+        * `PRODUCTO` - Producto
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Dirección de correo
+        first_name:
+          type: string
+          title: Nombres
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          nullable: true
+          maxLength: 20
+        role:
+          type: string
+          readOnly: true
+        foto_perfil:
+          type: string
+          format: uri
+          nullable: true
+          title: Foto de Perfil
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+      - role
+    UserProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          title: Nombres
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          nullable: true
+          maxLength: 20
+        foto_perfil:
+          type: string
+          format: binary
+          nullable: true
+          title: Foto de Perfil
+      required:
+      - first_name
+      - last_name
+    UserRegister:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          title: Dirección de correo
+          maxLength: 254
+        first_name:
+          type: string
+          title: Nombres
+          maxLength: 150
+        last_name:
+          type: string
+          title: Apellidos
+          maxLength: 150
+        telefono:
+          type: string
+          nullable: true
+          maxLength: 20
+      required:
+      - email
+      - first_name
+      - last_name
+    UserRegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Dirección de correo
+          maxLength: 254
+        first_name:
+          type: string
+          minLength: 1
+          title: Nombres
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          title: Apellidos
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          title: Contraseña
+          maxLength: 128
+        telefono:
+          type: string
+          nullable: true
+          maxLength: 20
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

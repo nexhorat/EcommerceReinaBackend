@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 # Importaciones de Spectacular
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
 from drf_spectacular.types import OpenApiTypes
 
 from .serializers import (
@@ -72,6 +72,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     }
 )
 class UserProfileView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
@@ -84,13 +85,24 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     summary="Cambiar Contraseña",
     description="Requiere la contraseña anterior y la nueva repetida dos veces.",
     responses={
-        200: OpenApiResponse(description="Contraseña actualizada correctamente."),
-        400: OpenApiResponse(description="La contraseña antigua es incorrecta o las nuevas no coinciden."),
-        401: OpenApiResponse(description="No autenticado.")
+        200: inline_serializer(
+            name='PasswordChangeResponse',
+            fields={
+                'detail': serializers.CharField(default="Contraseña actualizada correctamente.")
+            }
+        )
     }
 )
 class ChangePasswordView(generics.UpdateAPIView):
-    # ... (mantener configuración existente)
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+
+    def get_object(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return None 
+            
+        return self.request.user
 
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -115,7 +127,7 @@ class ChangePasswordView(generics.UpdateAPIView):
                     message=f'Hola {self.object.first_name}, te informamos que tu contraseña fue actualizada exitosamente.',
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[self.object.email],
-                    fail_silently=True,
+                    fail_silently=FalseTrue,
                 )
             except Exception as e:
                 print(f"Error enviando correo de cambio de pass: {e}")

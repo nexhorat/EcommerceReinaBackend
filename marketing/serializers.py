@@ -90,7 +90,7 @@ class CertificacionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TestimonioSerializer(serializers.ModelSerializer):
-    usuario_nombre = serializers.ReadOnlyField(source='usuario.get_full_name')
+    usuario_nombre = serializers.CharField(source='usuario.get_full_name', read_only=True)
     usuario_foto = serializers.SerializerMethodField()
 
     class Meta:

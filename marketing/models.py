@@ -10,7 +10,7 @@ class Categoria(models.Model):
         ('NOTICIA', 'Noticia'),
         ('INVESTIGACION', 'Investigación'),
         ('BLOG', 'Blog'),
-        # ('PRODUCTO', 'Producto'), # Descomentar cuando agregues el Ecommerce
+        ('PRODUCTO', 'Producto'), 
     ]
     nombre = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)

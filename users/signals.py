@@ -25,7 +25,7 @@ def user_created_actions(sender, instance, created, **kwargs):
                 message=f'Hola {instance.first_name}, gracias por registrarte en nuestra plataforma.',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[instance.email],
-                fail_silently=True, # Para que no rompa el registro si falla el correo
+                fail_silently=False, # Para que no rompa el registro si falla el correo
             )
         except Exception as e:
             print(f"Error enviando correo de bienvenida: {e}")
