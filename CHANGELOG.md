@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.0 (2025-12-13)
+
+### Features
+
+- Notificaciones de compra y de testimonio agregadas, api documentada 100%
+  ([`0065c97`](https://github.com/nexhorat/EcommerceReinaBackend/commit/0065c974621d5c4799cd6edaf4af0e2588915355))
+
+
 ## v1.6.0 (2025-12-13)
 
 
