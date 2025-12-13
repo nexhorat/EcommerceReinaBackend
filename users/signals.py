@@ -4,7 +4,10 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from .models import User
 
 @receiver(post_migrate)
 def create_initial_roles(sender, **kwargs):
@@ -69,12 +72,25 @@ def user_created_actions(sender, instance, created, **kwargs):
 
         # 2. Enviar Correo de Bienvenida
         try:
-            send_mail(
-                subject='¡Bienvenido a Ecommerce Reina!',
-                message=f'Hola {instance.first_name}, gracias por registrarte en nuestra plataforma.',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[instance.email],
-                fail_silently=False, 
+            subject = '¡Bienvenido a la Familia Reina!'
+            
+            # Renderizamos el HTML con los datos del usuario
+            html_content = render_to_string('emails/bienvenida.html', {
+                'nombre': instance.first_name or instance.email
+            })
+            
+            # Versión texto plano por si el correo del cliente no soporta HTML
+            text_content = strip_tags(html_content)
+
+            # Preparamos el mensaje
+            msg = EmailMultiAlternatives(
+                subject,
+                text_content,
+                settings.DEFAULT_FROM_EMAIL,
+                [instance.email]
             )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            
         except Exception as e:
             print(f"Error enviando correo de bienvenida: {e}")

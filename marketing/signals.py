@@ -1,52 +1,87 @@
 # marketing/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives, get_connection
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from .models import Noticia, Blog, Protocolo, Investigacion, Servicio
+
+# Importamos todos los modelos que generan notificación
+from .models import Noticia, Blog, Investigacion, Protocolo
 
 User = get_user_model()
 
-def enviar_notificacion_masiva(titulo, tipo_contenido, slug):
+def enviar_notificacion_masiva(instance, tipo_contenido, titulo, resumen, imagen=None):
     """
-    Función auxiliar para enviar correos.
-    ADVERTENCIA: En producción, esto debe hacerse con tareas asíncronas (Celery).
-    Hacerlo así puede poner lento el guardado si hay muchos usuarios.
+    Función auxiliar para enviar correos a todos los suscritos.
     """
-    # Obtenemos todos los emails de los usuarios
-    destinatarios = list(User.objects.values_list('email', flat=True))
+    # 1. Filtrar usuarios suscritos y activos
+    destinatarios = User.objects.filter(is_active=True, recibir_newsletter=True).values_list('email', flat=True)
     
-    asunto = f"Nuevo contenido publicado: {tipo_contenido}"
-    mensaje = f"Hola, hemos publicado un nuevo {tipo_contenido}: '{titulo}'.\n\nVisítalo en nuestra web."
+    if not destinatarios:
+        return
 
-    try:
-        send_mail(
-            subject=asunto,
-            message=mensaje,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=destinatarios, 
-            fail_silently=True
-        )
-    except Exception as e:
-        print(f"Error enviando notificación masiva: {e}")
+    # 2. Preparar el contenido HTML
+    # URL ficticia al frontend, ajusta según tu routing de React/Angular
+    link_frontend = f"http://urlficticafrontend:3000/{tipo_contenido.lower()}s/{instance.slug}"
+    
+    imagen_url = ""
+    if imagen:
+        # Aseguramos que la URL sea absoluta si usas almacenamiento local
+        # En producción con S3 esto cambia, pero para local sirve:
+        imagen_url = f"http://127.0.0.1:8000{imagen.url}"
+
+    html_content = render_to_string('emails/nuevo_contenido.html', {
+        'titulo': f"Nueva Publicación: {titulo}",
+        'tipo_contenido': tipo_contenido,
+        'titulo_contenido': titulo,
+        'resumen': resumen,
+        'link': link_frontend,
+        'imagen_url': imagen_url
+    })
+    text_content = strip_tags(html_content)
+
+    # 3. Enviar correos en bloque (Mass Mail)
+    # Usamos una sola conexión para ser eficientes
+    connection = get_connection()
+    messages = []
+    
+    subject = f"📢 Nuevo en Ecommerce Reina: {titulo}"
+    
+    # Nota: Para listas grandes, esto debe ir a una tarea asíncrona (Celery)
+    # Aquí lo hacemos simple usando CCO (BCC) para no revelar correos entre sí,
+    # o enviando uno por uno si necesitamos personalizar el nombre.
+    # Por eficiencia y privacidad básica, usaremos BCC en un solo correo o lotes.
+    
+    msg = EmailMultiAlternatives(
+        subject, text_content, settings.DEFAULT_FROM_EMAIL, 
+        bcc=list(destinatarios), # BCC oculta los destinatarios entre sí
+        connection=connection
+    )
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
 
 @receiver(post_save, sender=Noticia)
-def notificar_nueva_noticia(sender, instance, created, **kwargs):
-    if created and instance.publicado:
-        enviar_notificacion_masiva(instance.titulo, "Noticia", instance.slug)
-
 @receiver(post_save, sender=Blog)
-def notificar_nuevo_blog(sender, instance, created, **kwargs):
-    if created and instance.publicado:
-        enviar_notificacion_masiva(instance.titulo, "Artículo de Blog", instance.slug)
-
 @receiver(post_save, sender=Investigacion)
-def notificar_nueva_investigacion(sender, instance, created, **kwargs):
-    if created and instance.publicado:
-        enviar_notificacion_masiva(instance.titulo, "Investigación", instance.slug)
-
 @receiver(post_save, sender=Protocolo)
-def notificar_nuevo_protocolo(sender, instance, created, **kwargs):
-    if created and instance.es_visible:
-        enviar_notificacion_masiva(instance.titulo, "Protocolo de Cultivo", instance.slug)
+def notificar_nuevo_contenido(sender, instance, created, **kwargs):
+    # Solo notificar si se acaba de crear y está publicado
+    # Opcional: Podrías añadir lógica para detectar si cambió de borrador a publicado
+    if created and instance.publicado:
+        
+        # Determinar tipo para el correo
+        tipo = sender.__name__ # "Noticia", "Blog", etc.
+        
+        # Unificar campos (algunos modelos tienen imagen_card, otros descripcion_tecnica, etc)
+        resumen = getattr(instance, 'resumen', getattr(instance, 'descripcion_tecnica', ''))
+        imagen = getattr(instance, 'imagen_card', None)
+        
+        enviar_notificacion_masiva(
+            instance=instance,
+            tipo_contenido=tipo,
+            titulo=instance.titulo,
+            resumen=resumen,
+            imagen=imagen
+        )

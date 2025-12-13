@@ -103,7 +103,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -275,3 +275,6 @@ BOLD_API_KEY = os.getenv('BOLD_API_KEY', 'TU_API_KEY_PRUEBAS')
 BOLD_SECRET_KEY = os.getenv('BOLD_SECRET_KEY', 'TU_SECRET_KEY_PRUEBAS')
 BOLD_INTEGRITY_SECRET = os.getenv('BOLD_INTEGRITY_SECRET', 'TU_INTEGRITY_SECRET')
 BOLD_ENVIRONMENT = os.getenv('BOLD_ENVIRONMENT', 'sandbox') # o 'production'
+
+# Tiempo en segundos (Ejemplo: 24 horas = 86400 segundos)
+PASSWORD_RESET_TIMEOUT = 900

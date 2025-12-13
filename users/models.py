@@ -19,6 +19,14 @@ class User(AbstractUser):
         null=True, 
         verbose_name="Foto de Perfil"
     )
+    recibir_newsletter = models.BooleanField(
+        default=True, 
+        verbose_name="Recibir noticias y actualizaciones"
+    )
+    recibir_ofertas = models.BooleanField(
+        default=True, 
+        verbose_name="Recibir ofertas y nuevos productos"
+    )
 
     # Configuraciones de autenticación
     USERNAME_FIELD = 'email' # El login será con email

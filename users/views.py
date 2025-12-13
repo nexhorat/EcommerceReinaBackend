@@ -13,6 +13,9 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.urls import reverse
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 # Importaciones de Spectacular
 from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
@@ -139,7 +142,7 @@ class ChangePasswordView(generics.UpdateAPIView):
                     message=f'Hola {self.object.first_name}, te informamos que tu contraseña fue actualizada exitosamente.',
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[self.object.email],
-                    fail_silently=FalseTrue,
+                    fail_silently=False,
                 )
             except Exception as e:
                 print(f"Error enviando correo de cambio de pass: {e}")
@@ -210,17 +213,25 @@ class PasswordResetRequestView(generics.GenericAPIView):
             # Ejemplo: https://mitienda.com/reset-password/MTU/asz-123...
             # Por ahora usaremos una URL genérica de ejemplo:
             domain = "http://127.0.0.1:8000" # Cambiar por tu dominio real
-            link = f"{domain}/auth/reset-password/{uidb64}/{token}/"
+            link = f"{domain}/api/usuarios/password-reset/{uidb64}/{token}/"
             
             # 3. Enviar Correo
             try:
-                send_mail(
-                    subject='Recuperación de Contraseña - Ecommerce Reina',
-                    message=f'Hola {user.first_name},\n\nUsa el siguiente enlace para restablecer tu contraseña:\n{link}\n\nSi no fuiste tú, ignora este correo.',
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
+                html_content = render_to_string('emails/password_reset.html', {
+                    'nombre': user.first_name,
+                    'link': link
+                })
+                text_content = strip_tags(html_content)
+
+                msg = EmailMultiAlternatives(
+                    'Restablecer Contraseña - Ecommerce Reina',
+                    text_content,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email]
                 )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+                
             except Exception as e:
                 return Response({'error': 'Error enviando el correo'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

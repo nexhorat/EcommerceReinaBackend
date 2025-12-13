@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Pedido</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <table role="presentation" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+                    <tr>
+                        <td style="background-color: #13261B; padding: 30px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 1px;">¡GRACIAS POR TU COMPRA!</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="color: #333333; font-size: 20px;">Hola, {{ nombre }}</h2>
+                            <p style="font-size: 16px; color: #555555;">Tu pedido <strong>#{{ pedido_id }}</strong> ha sido recibido exitosamente.</p>
+                            
+                            <table width="100%" style="border-collapse: collapse; margin-top: 20px;">
+                                <tr style="background-color: #f8f8f8; text-align: left;">
+                                    <th style="padding: 10px; border-bottom: 2px solid #ddd;">Producto</th>
+                                    <th style="padding: 10px; border-bottom: 2px solid #ddd;">Cant.</th>
+                                    <th style="padding: 10px; border-bottom: 2px solid #ddd;">Precio</th>
+                                </tr>
+                                {% for item in items %}
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ item.producto.nombre }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ item.cantidad }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${{ item.precio_unitario }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+
+                            <p style="font-size: 18px; font-weight: bold; text-align: right; margin-top: 20px; color: #13261B;">
+                                Total Pagado: ${{ total }}
+                            </p>
+                            
+                            <p style="font-size: 14px; color: #777; margin-top: 30px;">
+                                Enviaremos tus productos a: {{ direccion }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

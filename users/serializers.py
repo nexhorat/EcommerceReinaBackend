@@ -26,8 +26,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'telefono', 'role', 'foto_perfil']
-        read_only_fields = ['id', 'email'] 
+        # Agregamos los nuevos campos a la lista
+        fields = ['id', 'email', 'first_name', 'last_name', 'telefono', 'role', 'foto_perfil', 'recibir_newsletter', 'recibir_ofertas']
+        read_only_fields = ['id', 'email', 'role'] 
 
     @extend_schema_field(str)
     def get_role(self, obj):
