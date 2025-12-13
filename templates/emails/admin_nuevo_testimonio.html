@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Comentario Pendiente</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <table role="presentation" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background-color: #d9534f; padding: 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 20px; text-transform: uppercase;">💬 Nuevo Comentario Pendiente</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px;">
+                            <p style="font-size: 16px;">Hola Admin,</p>
+                            <p style="font-size: 16px;">El usuario <strong>{{ usuario }}</strong> ha dejado un nuevo testimonio que requiere tu moderación.</p>
+                            
+                            <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #d9534f; margin: 20px 0; font-style: italic;">
+                                "{{ contenido }}"
+                            </div>
+
+                            <p style="font-size: 14px; color: #666;">Empresa/Cargo: {{ cargo }}</p>
+
+                            <div style="text-align: center; margin-top: 30px;">
+                                <a href="{{ link_admin }}" style="background-color: #13261B; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+                                    Revisar y Aprobar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

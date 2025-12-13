@@ -534,6 +534,147 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/direcciones/:
+    get:
+      operationId: direcciones_list
+      tags:
+      - Tienda - Direcciones
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Direccion'
+          description: ''
+    post:
+      operationId: direcciones_create
+      tags:
+      - Tienda - Direcciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DireccionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DireccionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DireccionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Direccion'
+          description: ''
+  /api/direcciones/{id}/:
+    get:
+      operationId: direcciones_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este direccion.
+        required: true
+      tags:
+      - Tienda - Direcciones
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Direccion'
+          description: ''
+    put:
+      operationId: direcciones_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este direccion.
+        required: true
+      tags:
+      - Tienda - Direcciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DireccionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DireccionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DireccionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Direccion'
+          description: ''
+    patch:
+      operationId: direcciones_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este direccion.
+        required: true
+      tags:
+      - Tienda - Direcciones
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDireccionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDireccionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDireccionRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Direccion'
+          description: ''
+    delete:
+      operationId: direcciones_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: Un valor de entero único que identifique este direccion.
+        required: true
+      tags:
+      - Tienda - Direcciones
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/favoritos/:
     get:
       operationId: favoritos_list
@@ -1017,7 +1158,7 @@ paths:
           description: ''
     post:
       operationId: pedidos_create
-      summary: Checkout (Crear Pedido desde Carrito)
+      summary: Checkout (Crear Pedido con Cálculo de Envío)
       tags:
       - Tienda - Pedidos
       requestBody:
@@ -1589,6 +1730,75 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/usuarios/gestion-usuarios/:
+    get:
+      operationId: usuarios_gestion_usuarios_list
+      description: Solo para cambiar los roles de un usuario existente.
+      tags:
+      - Gestión de Usuarios (Admin)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRoleAssign'
+          description: ''
+  /api/usuarios/gestion-usuarios/{id}/:
+    get:
+      operationId: usuarios_gestion_usuarios_retrieve
+      description: Solo para cambiar los roles de un usuario existente.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Gestión de Usuarios (Admin)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleAssign'
+          description: ''
+    patch:
+      operationId: usuarios_gestion_usuarios_partial_update
+      description: Solo para cambiar los roles de un usuario existente.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Gestión de Usuarios (Admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRoleAssignRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRoleAssignRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRoleAssignRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleAssign'
+          description: ''
   /api/usuarios/login/:
     post:
       operationId: usuarios_login_create
@@ -1613,6 +1823,56 @@ paths:
           description: Tokens de acceso y refresco generados correctamente.
         '401':
           description: Credenciales inválidas (email o contraseña incorrectos).
+  /api/usuarios/password-reset/:
+    post:
+      operationId: usuarios_password_reset_create
+      description: Envía un correo con un link/token al usuario si el email existe.
+      summary: Solicitar recuperación de contraseña
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: Correo enviado (o simulado si no existe el user).
+  /api/usuarios/password-reset-confirm/:
+    patch:
+      operationId: usuarios_password_reset_confirm_partial_update
+      description: Recibe el token, el uidb64 (del correo) y la nueva contraseña para
+        efectuar el cambio.
+      summary: Confirmar nueva contraseña
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSetNewPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSetNewPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSetNewPasswordRequest'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: Contraseña restablecida exitosamente.
   /api/usuarios/perfil/:
     get:
       operationId: usuarios_perfil_retrieve
@@ -1783,6 +2043,171 @@ paths:
           description: Usuario creado exitosamente (incluye mensaje 'detail').
         '400':
           description: Error de validación (email ya existe o contraseña inválida).
+  /api/usuarios/roles/:
+    get:
+      operationId: usuarios_roles_list
+      description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
+        definir sus permisos.'
+      tags:
+      - Gestión de Roles (Admin)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+          description: ''
+    post:
+      operationId: usuarios_roles_create
+      description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
+        definir sus permisos.'
+      tags:
+      - Gestión de Roles (Admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/usuarios/roles/{id}/:
+    get:
+      operationId: usuarios_roles_retrieve
+      description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
+        definir sus permisos.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Gestión de Roles (Admin)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    put:
+      operationId: usuarios_roles_update
+      description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
+        definir sus permisos.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Gestión de Roles (Admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    patch:
+      operationId: usuarios_roles_partial_update
+      description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
+        definir sus permisos.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Gestión de Roles (Admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    delete:
+      operationId: usuarios_roles_destroy
+      description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
+        definir sus permisos.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Gestión de Roles (Admin)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/usuarios/roles/permisos/:
+    get:
+      operationId: usuarios_roles_permisos_retrieve
+      description: Lista todos los permisos del sistema para que el Admin elija cuáles
+        asignar.
+      tags:
+      - Gestión de Roles (Admin)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
   /api/usuarios/token/refresh/:
     post:
       operationId: usuarios_token_refresh_create
@@ -2139,6 +2564,81 @@ components:
       required:
       - cantidad
       - precio_unitario
+    Direccion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre_completo:
+          type: string
+          title: Quien recibe
+          maxLength: 150
+        direccion:
+          type: string
+          title: Dirección exacta
+          maxLength: 255
+        ciudad:
+          type: string
+          maxLength: 100
+        departamento:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 20
+        referencia:
+          type: string
+          nullable: true
+          description: Apto, color casa, etc.
+          maxLength: 255
+        es_principal:
+          type: boolean
+      required:
+      - ciudad
+      - departamento
+      - direccion
+      - id
+      - nombre_completo
+      - telefono
+    DireccionRequest:
+      type: object
+      properties:
+        nombre_completo:
+          type: string
+          minLength: 1
+          title: Quien recibe
+          maxLength: 150
+        direccion:
+          type: string
+          minLength: 1
+          title: Dirección exacta
+          maxLength: 255
+        ciudad:
+          type: string
+          minLength: 1
+          maxLength: 100
+        departamento:
+          type: string
+          minLength: 1
+          maxLength: 100
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 20
+        referencia:
+          type: string
+          nullable: true
+          description: Apto, color casa, etc.
+          maxLength: 255
+        es_principal:
+          type: boolean
+      required:
+      - ciudad
+      - departamento
+      - direccion
+      - nombre_completo
+      - telefono
     EstadoEnum:
       enum:
       - PENDIENTE
@@ -2544,6 +3044,15 @@ components:
         detail:
           type: string
           default: Contraseña actualizada correctamente.
+    PasswordResetRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
     PatchedBlogDetailRequest:
       type: object
       properties:
@@ -2641,6 +3150,38 @@ components:
           writeOnly: true
           minLength: 1
           title: Confirmar nueva contraseña
+    PatchedDireccionRequest:
+      type: object
+      properties:
+        nombre_completo:
+          type: string
+          minLength: 1
+          title: Quien recibe
+          maxLength: 150
+        direccion:
+          type: string
+          minLength: 1
+          title: Dirección exacta
+          maxLength: 255
+        ciudad:
+          type: string
+          minLength: 1
+          maxLength: 100
+        departamento:
+          type: string
+          minLength: 1
+          maxLength: 100
+        telefono:
+          type: string
+          minLength: 1
+          maxLength: 20
+        referencia:
+          type: string
+          nullable: true
+          description: Apto, color casa, etc.
+          maxLength: 255
+        es_principal:
+          type: boolean
     PatchedFavoritoRequest:
       type: object
       properties:
@@ -2773,6 +3314,20 @@ components:
           description: Orden de aparición en la rejilla
         es_visible:
           type: boolean
+    PatchedRoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Nombre
+          maxLength: 150
+        permissions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            title: Nombre en código
     PatchedServicioDetailRequest:
       type: object
       description: |-
@@ -2823,6 +3378,21 @@ components:
           minLength: 1
           nullable: true
           title: Optional Add-ons
+    PatchedSetNewPasswordRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+        uidb64:
+          type: string
+          writeOnly: true
+          minLength: 1
     PatchedTestimonioRequest:
       type: object
       properties:
@@ -2857,6 +3427,21 @@ components:
           format: binary
           nullable: true
           title: Foto de Perfil
+        recibir_newsletter:
+          type: boolean
+          title: Recibir noticias y actualizaciones
+        recibir_ofertas:
+          type: boolean
+          title: Recibir ofertas y nuevos productos
+    PatchedUserRoleAssignRequest:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            title: Nombre
     Pedido:
       type: object
       properties:
@@ -3136,6 +3721,42 @@ components:
       - descripcion_tecnica
       - imagen_card
       - titulo
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Nombre
+          maxLength: 150
+        permissions:
+          type: array
+          items:
+            type: string
+            title: Nombre en código
+      required:
+      - id
+      - name
+      - permissions
+    RoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Nombre
+          maxLength: 150
+        permissions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            title: Nombre en código
+      required:
+      - name
+      - permissions
     ServicioCard:
       type: object
       description: |-
@@ -3414,6 +4035,12 @@ components:
           format: uri
           nullable: true
           title: Foto de Perfil
+        recibir_newsletter:
+          type: boolean
+          title: Recibir noticias y actualizaciones
+        recibir_ofertas:
+          type: boolean
+          title: Recibir ofertas y nuevos productos
       required:
       - email
       - first_name
@@ -3442,6 +4069,12 @@ components:
           format: binary
           nullable: true
           title: Foto de Perfil
+        recibir_newsletter:
+          type: boolean
+          title: Recibir noticias y actualizaciones
+        recibir_ofertas:
+          type: boolean
+          title: Recibir ofertas y nuevos productos
       required:
       - first_name
       - last_name
@@ -3503,6 +4136,31 @@ components:
       - first_name
       - last_name
       - password
+    UserRoleAssign:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+          title: Nombres
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Dirección de correo
+        groups:
+          type: array
+          items:
+            type: string
+            title: Nombre
+      required:
+      - email
+      - first_name
+      - groups
+      - id
   securitySchemes:
     jwtAuth:
       type: http

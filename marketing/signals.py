@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 # Importamos todos los modelos que generan notificación
-from .models import Noticia, Blog, Investigacion, Protocolo
+from .models import Noticia, Blog, Investigacion, Protocolo, Testimonio
 
 User = get_user_model()
 
@@ -85,3 +85,41 @@ def notificar_nuevo_contenido(sender, instance, created, **kwargs):
             resumen=resumen,
             imagen=imagen
         )
+
+@receiver(post_save, sender=Testimonio)
+def notificar_nuevo_testimonio(sender, instance, created, **kwargs):
+    if created:
+        # 1. Obtener admins
+        admins = User.objects.filter(
+            groups__name='Administrador', 
+            is_active=True
+        ).values_list('email', flat=True)
+
+        if not admins:
+            admins = User.objects.filter(is_superuser=True).values_list('email', flat=True)
+            
+        if not admins:
+            return
+
+        # 2. Generar Link directo al panel de administración de Django
+        # Asumiendo que corres en local puerto 8000. En producción cambia esto por tu dominio.
+        link_admin = f"http://127.0.0.1:8000/admin/marketing/testimonio/{instance.id}/change/"
+
+        # 3. Renderizar HTML
+        html_content = render_to_string('emails/admin_nuevo_testimonio.html', {
+            'usuario': instance.usuario.get_full_name() or instance.usuario.email,
+            'contenido': instance.contenido,
+            'cargo': instance.cargo_empresa or "No especificado",
+            'link_admin': link_admin
+        })
+        text_content = strip_tags(html_content)
+
+        # 4. Enviar correo
+        msg = EmailMultiAlternatives(
+            f"💬 Nuevo Comentario Pendiente de {instance.usuario.first_name}",
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            to=list(admins) # Enviamos a todos los admins
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()

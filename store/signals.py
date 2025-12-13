@@ -95,3 +95,49 @@ def notificar_pedido(sender, instance, created, **kwargs):
                 )
         except Exception as e:
             print(f"Error notificando al admin: {e}")
+
+@receiver(post_save, sender=Pedido)
+def notificar_pedido(sender, instance, created, **kwargs):
+    if created:
+        # A. Correo al Cliente (Ya lo tenías, se mantiene igual)
+        # ...
+
+        # B. Correo de Alerta al ADMIN (ACTUALIZADO)
+        try:
+            admins = User.objects.filter(
+                groups__name='Administrador', 
+                is_active=True
+            ).values_list('email', flat=True)
+
+            if not admins:
+                admins = User.objects.filter(is_superuser=True).values_list('email', flat=True)
+            
+            if admins:
+                # Link al detalle del pedido en el Admin de Django
+                link_admin = f"http://127.0.0.1:8000/admin/store/pedido/{instance.id}/change/"
+                
+                ciudad_destino = "Sin dirección"
+                if instance.direccion_envio:
+                    ciudad_destino = f"{instance.direccion_envio.ciudad} ({instance.direccion_envio.departamento})"
+
+                html_admin = render_to_string('emails/admin_nueva_venta.html', {
+                    'pedido_id': instance.id,
+                    'total': "{:,.0f}".format(instance.total), # Formato moneda
+                    'cliente': instance.usuario.get_full_name(),
+                    'email_cliente': instance.usuario.email,
+                    'ciudad': ciudad_destino,
+                    'link_admin': link_admin
+                })
+                text_admin = strip_tags(html_admin)
+
+                msg_admin = EmailMultiAlternatives(
+                    f"💰 Nueva Venta: Pedido #{instance.id}",
+                    text_admin,
+                    settings.DEFAULT_FROM_EMAIL,
+                    to=list(admins)
+                )
+                msg_admin.attach_alternative(html_admin, "text/html")
+                msg_admin.send()
+
+        except Exception as e:
+            print(f"Error notificando al admin: {e}")

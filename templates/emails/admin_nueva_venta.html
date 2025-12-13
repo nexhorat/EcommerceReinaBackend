@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Venta Realizada</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <table role="presentation" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background-color: #13261B; padding: 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 20px; text-transform: uppercase;">💰 Nueva Venta: ${{ total }}</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px;">
+                            <p style="font-size: 16px;">¡Buenas noticias! Se ha registrado un nuevo pedido exitoso.</p>
+                            
+                            <ul style="font-size: 15px; line-height: 1.8;">
+                                <li><strong>Pedido ID:</strong> #{{ pedido_id }}</li>
+                                <li><strong>Cliente:</strong> {{ cliente }}</li>
+                                <li><strong>Email:</strong> {{ email_cliente }}</li>
+                                <li><strong>Ciudad:</strong> {{ ciudad }}</li>
+                            </ul>
+
+                            <div style="text-align: center; margin-top: 30px;">
+                                <a href="{{ link_admin }}" style="background-color: #13261B; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+                                    Ver Detalle del Pedido
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

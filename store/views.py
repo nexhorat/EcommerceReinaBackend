@@ -101,7 +101,9 @@ class DireccionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # El usuario solo ve SUS direcciones
+        if getattr(self, 'swagger_fake_view', False):
+            return Direccion.objects.none()
+        
         return Direccion.objects.filter(usuario=self.request.user)
 
     def perform_create(self, serializer):
