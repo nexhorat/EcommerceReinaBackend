@@ -7,11 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
-from .models import Producto, Carrito, ItemCarrito, Pedido, DetallePedido, Favorito
+from .models import Producto, Carrito, ItemCarrito, Pedido, DetallePedido, Favorito, Direccion, TarifaEnvio
 from .serializers import (
     ProductoCardSerializer, ProductoDetailSerializer, 
     CarritoSerializer, ItemCarritoSerializer, 
-    PedidoSerializer, FavoritoSerializer
+    PedidoSerializer, FavoritoSerializer, DireccionSerializer
 )
 from store import serializers
 
@@ -95,6 +95,19 @@ class CarritoViewSet(viewsets.GenericViewSet):
         item.delete()
         return Response(CarritoSerializer(cart).data)
 
+@extend_schema(tags=['Tienda - Direcciones'])
+class DireccionViewSet(viewsets.ModelViewSet):
+    serializer_class = DireccionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # El usuario solo ve SUS direcciones
+        return Direccion.objects.filter(usuario=self.request.user)
+
+    def perform_create(self, serializer):
+        # Asignar usuario automáticamente
+        serializer.save(usuario=self.request.user)
+
 @extend_schema(tags=['Tienda - Pedidos'])
 class PedidoViewSet(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
@@ -107,33 +120,61 @@ class PedidoViewSet(viewsets.ModelViewSet):
         
         return Pedido.objects.filter(usuario=self.request.user).order_by('-created_at')
 
-    @extend_schema(summary="Checkout (Crear Pedido desde Carrito)")
+    @extend_schema(summary="Checkout (Crear Pedido con Cálculo de Envío)")
     def create(self, request, *args, **kwargs):
-        # 1. Obtener carrito
+        # 1. Validar carrito
         try:
             carrito = Carrito.objects.get(usuario=request.user)
         except Carrito.DoesNotExist:
             return Response({"error": "El carrito está vacío"}, status=400)
-
+        
         items = carrito.items.all()
         if not items.exists():
             return Response({"error": "El carrito está vacío"}, status=400)
 
-        # 2. Calcular total y validar stock (Atomic Transaction)
-        total = 0
+        # 2. Validar Dirección
+        direccion_id = request.data.get('direccion_id')
+        if not direccion_id:
+            return Response({"error": "Debes enviar el 'direccion_id'"}, status=400)
+        
+        direccion = get_object_or_404(Direccion, id=direccion_id, usuario=request.user)
+
+        # 3. Calcular Costo de Envío (Tu Lógica de Negocio)
+        try:
+            tarifa = TarifaEnvio.objects.get(ciudad__iexact=direccion.ciudad)
+            costo_envio = tarifa.precio_base
+            
+            # REGLA: Si lleva más de 5 productos, cobramos extra por peso/volumen
+            cantidad_total = sum(item.cantidad for item in items)
+            if cantidad_total > 5:
+                extra = (cantidad_total - 5) * tarifa.precio_extra_producto
+                costo_envio += extra
+                
+        except TarifaEnvio.DoesNotExist:
+            # Si no hay tarifa para esa ciudad, decidimos qué hacer:
+            # Opción A: Error (No cubrimos esa zona)
+            return Response({"error": f"Lo sentimos, no tenemos cobertura configurada para {direccion.ciudad}"}, status=400)
+            # Opción B: Costo por defecto (descomentar si prefieres esto)
+            # costo_envio = 20000 
+
+        # 4. Crear Pedido (Transacción Atómica)
         with transaction.atomic():
             pedido = Pedido.objects.create(
                 usuario=request.user,
-                total=0, # Se actualiza abajo
+                direccion_envio=direccion,
                 estado='PENDIENTE',
-                metodo_pago=request.data.get('metodo_pago', 'PENDIENTE')
+                metodo_pago=request.data.get('metodo_pago', 'PENDIENTE'),
+                costo_envio=costo_envio,
+                subtotal=0,
+                total=0
             )
 
+            subtotal_acumulado = 0
             for item in items:
+                # Validar Stock
                 if item.producto.stock < item.cantidad:
                     raise serializers.ValidationError(f"Stock insuficiente para {item.producto.nombre}")
                 
-                # Crear detalle
                 DetallePedido.objects.create(
                     pedido=pedido,
                     producto=item.producto,
@@ -141,16 +182,18 @@ class PedidoViewSet(viewsets.ModelViewSet):
                     precio_unitario=item.producto.precio
                 )
                 
-                # Restar stock
+                # Descontar inventario
                 item.producto.stock -= item.cantidad
                 item.producto.save()
                 
-                total += item.cantidad * item.producto.precio
+                subtotal_acumulado += item.cantidad * item.producto.precio
 
-            pedido.total = total
+            # Totales Finales
+            pedido.subtotal = subtotal_acumulado
+            pedido.total = subtotal_acumulado + costo_envio
             pedido.save()
 
-            # 3. Vaciar carrito
+            # Vaciar carrito
             carrito.items.all().delete()
 
         serializer = self.get_serializer(pedido)

@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from marketing.models import Categoria # Usamos la categoría unificada
 
+
+
 class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'PRODUCTO'}, related_name='productos')
     nombre = models.CharField(max_length=200)
@@ -17,6 +19,15 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class TarifaEnvio(models.Model):
+    ciudad = models.CharField(max_length=100, unique=True, help_text="Ciudad o Municipio destino")
+    departamento = models.CharField(max_length=100)
+    precio_base = models.DecimalField(max_digits=10, decimal_places=2, help_text="Costo envío estándar")
+    precio_extra_producto = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Costo extra por producto después de X cantidad")
+
+    def __str__(self):
+        return f"{self.ciudad} - ${self.precio_base}"
 
 class Favorito(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -37,18 +48,37 @@ class ItemCarrito(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
 
+class Direccion(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='direcciones')
+    nombre_completo = models.CharField("Quien recibe", max_length=150)
+    direccion = models.CharField("Dirección exacta", max_length=255)
+    ciudad = models.CharField(max_length=100)
+    departamento = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20)
+    referencia = models.CharField(max_length=255, blank=True, null=True, help_text="Apto, color casa, etc.")
+    es_principal = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.es_principal:
+            Direccion.objects.filter(usuario=self.usuario, es_principal=True).update(es_principal=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.ciudad} - {self.direccion}"
+
 class Pedido(models.Model):
     ESTADOS = [('PENDIENTE', 'Pendiente'), ('PAGADO', 'Pagado'), ('ENVIADO', 'Enviado'), ('CANCELADO', 'Cancelado')]
     
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE')
-    
-    # Datos de Pasarela
-    transaccion_id = models.CharField(max_length=100, blank=True, null=True) # ID de Wompi/MercadoPago
+    transaccion_id = models.CharField(max_length=100, blank=True, null=True) 
     metodo_pago = models.CharField(max_length=50, blank=True, default='PENDIENTE')
-    
     created_at = models.DateTimeField(auto_now_add=True)
+    direccion_envio = models.ForeignKey(Direccion, on_delete=models.SET_NULL, null=True, blank=True)
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    costo_envio = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     
     def __str__(self):
         return f"Pedido #{self.id} - {self.usuario.email}"

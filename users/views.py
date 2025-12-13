@@ -1,11 +1,18 @@
-from rest_framework import generics, status, serializers
+from rest_framework import generics, status, serializers, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.conf import settings
+from .permissions import IsAdministrador
+from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.urls import reverse
 
 # Importaciones de Spectacular
 from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
@@ -13,8 +20,13 @@ from drf_spectacular.types import OpenApiTypes
 
 from .serializers import (
     UserRegisterSerializer, 
-    UserProfileSerializer, 
-    ChangePasswordSerializer
+    UserProfileSerializer,
+    RoleSerializer, 
+    UserRoleAssignSerializer, 
+    PermissionSerializer, 
+    ChangePasswordSerializer,
+    PasswordResetRequestSerializer,
+    SetNewPasswordSerializer
 )
 
 User = get_user_model()
@@ -138,3 +150,99 @@ class ChangePasswordView(generics.UpdateAPIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+# A. Vista para Crear/Editar los ROLES (Grupos) y sus Permisos
+@extend_schema(tags=['Gestión de Roles (Admin)'])
+class RoleManagementViewSet(viewsets.ModelViewSet):
+    """
+    CRUD de Roles. Permite crear nuevos roles (ej: 'Analista') y definir sus permisos.
+    """
+    queryset = Group.objects.all()
+    serializer_class = RoleSerializer
+    permission_classes = [IsAdministrador]
+
+    @action(detail=False, methods=['get'])
+    def permisos_disponibles(self, request):
+        """Lista todos los permisos del sistema para que el Admin elija cuáles asignar."""
+        # Filtramos solo permisos de nuestras apps para no ensuciar la lista
+        apps_relevantes = ['store', 'marketing', 'users']
+        permisos = Permission.objects.filter(content_type__app_label__in=apps_relevantes)
+        serializer = PermissionSerializer(permisos, many=True)
+        return Response(serializer.data)
+
+# B. Vista para Asignar esos Roles a los Usuarios
+@extend_schema(tags=['Gestión de Usuarios (Admin)'])
+class UserRoleAssignmentViewSet(viewsets.ModelViewSet):
+    """
+    Solo para cambiar los roles de un usuario existente.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserRoleAssignSerializer
+    permission_classes = [IsAdministrador]
+    http_method_names = ['get', 'patch'] # Solo ver y modificar parcialmente
+
+# A. Solicitar Link de Recuperación
+@extend_schema(
+    tags=['Autenticación'],
+    summary="Solicitar recuperación de contraseña",
+    description="Envía un correo con un link/token al usuario si el email existe.",
+    request=PasswordResetRequestSerializer,
+    responses={200: OpenApiResponse(description="Correo enviado (o simulado si no existe el user).")}
+)
+class PasswordResetRequestView(generics.GenericAPIView):
+    serializer_class = PasswordResetRequestSerializer
+    permission_classes = [AllowAny] # Cualquiera puede pedir recuperar su cuenta
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        # Buscamos el usuario (Si no existe, no decimos nada por seguridad)
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            
+            # 1. Generar Token y UID
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            
+            # 2. Crear Link (Ajusta esto a la URL de tu Frontend en React/Angular)
+            # Ejemplo: https://mitienda.com/reset-password/MTU/asz-123...
+            # Por ahora usaremos una URL genérica de ejemplo:
+            domain = "http://127.0.0.1:8000" # Cambiar por tu dominio real
+            link = f"{domain}/auth/reset-password/{uidb64}/{token}/"
+            
+            # 3. Enviar Correo
+            try:
+                send_mail(
+                    subject='Recuperación de Contraseña - Ecommerce Reina',
+                    message=f'Hola {user.first_name},\n\nUsa el siguiente enlace para restablecer tu contraseña:\n{link}\n\nSi no fuiste tú, ignora este correo.',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                return Response({'error': 'Error enviando el correo'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({'detail': 'Si el correo existe, recibirás un enlace de recuperación.'}, status=status.HTTP_200_OK)
+
+# B. Confirmar y Cambiar Contraseña
+@extend_schema(
+    tags=['Autenticación'],
+    summary="Confirmar nueva contraseña",
+    description="Recibe el token, el uidb64 (del correo) y la nueva contraseña para efectuar el cambio.",
+    request=SetNewPasswordSerializer,
+    responses={200: OpenApiResponse(description="Contraseña restablecida exitosamente.")}
+)
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = SetNewPasswordSerializer
+    permission_classes = [AllowAny]
+
+    def patch(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # El método save() del serializer ya hace el user.set_password()
+        serializer.save() 
+
+        return Response({'detail': 'Contraseña restablecida exitosamente.'}, status=status.HTTP_200_OK)

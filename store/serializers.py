@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
-from .models import Producto, Favorito, Carrito, ItemCarrito, Pedido, DetallePedido
+from .models import Producto, Favorito, Carrito, ItemCarrito, Pedido, DetallePedido, Direccion, TarifaEnvio
 
 # --- PRODUCTOS ---
 class ProductoCardSerializer(serializers.ModelSerializer):
@@ -74,3 +74,13 @@ class FavoritoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorito
         fields = ['id', 'producto', 'producto_id', 'created_at']
+
+class TarifaEnvioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TarifaEnvio
+        fields = '__all__'
+
+class DireccionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Direccion
+        fields = ['id', 'nombre_completo', 'direccion', 'ciudad', 'departamento', 'telefono', 'referencia', 'es_principal']
