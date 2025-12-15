@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
+from .permissions import IsAdminOrReadOnly, IsDespachadorOrAdmin 
+
 from .models import Producto, Carrito, ItemCarrito, Pedido, DetallePedido, Favorito, Direccion, TarifaEnvio
 from .serializers import (
     ProductoCardSerializer, ProductoDetailSerializer, 
@@ -16,15 +18,20 @@ from .serializers import (
 from store import serializers
 
 @extend_schema(tags=['Tienda - Productos'])
-class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
+class ProductoViewSet(viewsets.ModelViewSet): # <--- CAMBIO: ModelViewSet habilita POST/PUT/DELETE
     queryset = Producto.objects.all().order_by('-es_destacado', '-id')
+    
+    # PERMISOS: Admin edita, el mundo ve
+    permission_classes = [IsAdminOrReadOnly] 
+
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['categoria', 'es_destacado']
     search_fields = ['nombre', 'descripcion']
     lookup_field = 'slug'
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        # Usamos el DetailSerializer para ver uno solo o para editar/crear (para ver todos los campos)
+        if self.action in ['retrieve', 'create', 'update', 'partial_update']:
             return ProductoDetailSerializer
         return ProductoCardSerializer
 
