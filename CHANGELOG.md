@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.1 (2025-12-15)
+
+### Bug Fixes
+
+- Ajuste del endpoint de pedidos
+  ([`b21bd17`](https://github.com/nexhorat/EcommerceReinaBackend/commit/b21bd174e5e68dfa9f6b47549177f96ea97805a1))
+
+
 ## v1.7.0 (2025-12-13)
 
 ### Features
