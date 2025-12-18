@@ -60,6 +60,20 @@ EMAIL_HOST_PASSWORD = get_env("EMAIL_HOST_PASSWORD", default="")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+
+# 2. Configuración de CORS (Seguridad)
+# Si quieres ser estricto y seguro, cambia CORS_ALLOW_ALL_ORIGINS a False
+# y usa esta lista:
+CORS_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+    "http://localhost:3000", # Para pruebas locales
+]
+
+# CSRF (Importante para formularios seguros)
+CSRF_TRUSTED_ORIGINS = [
+    FRONTEND_URL,
+]
 AUTH_USER_MODEL = 'users.User'
 
 
@@ -175,7 +189,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
