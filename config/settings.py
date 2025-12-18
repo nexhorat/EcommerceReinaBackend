@@ -129,6 +129,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        # --- AGREGA ESTO PARA LA NUBE ---
+        #'OPTIONS': {
+        #    'sslmode': 'require',  # Obligatorio para Supabase, Neon, AWS, Render, etc.
+        #},
     }
 }
 
