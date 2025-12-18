@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.2 (2025-12-18)
+
+### Bug Fixes
+
+- Creacion de dockerfile para despliegue
+  ([`3de4289`](https://github.com/nexhorat/EcommerceReinaBackend/commit/3de42896be9fba311c8a787d3e693d49c1006906))
+
+
 ## v1.7.1 (2025-12-15)
 
 ### Bug Fixes
