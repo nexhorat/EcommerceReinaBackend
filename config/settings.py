@@ -58,11 +58,9 @@ EMAIL_USE_TLS = get_env("EMAIL_USE_TLS", default=True, cast="bool")
 EMAIL_HOST_USER = get_env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = get_env("EMAIL_HOST_PASSWORD", default="")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 AUTH_USER_MODEL = 'users.User'
-
-
 
 
 # Application definition
