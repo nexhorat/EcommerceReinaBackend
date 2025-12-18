@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.4 (2025-12-18)
+
+### Bug Fixes
+
+- Configuracion en cors creada
+  ([`3a7e116`](https://github.com/nexhorat/EcommerceReinaBackend/commit/3a7e1169b7d598f76395fd972c8688e0a6736b29))
+
+
 ## v1.7.3 (2025-12-18)
 
 ### Bug Fixes
