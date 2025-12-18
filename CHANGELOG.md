@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.3 (2025-12-18)
+
+### Bug Fixes
+
+- Mapeo de ips en configuraciones
+  ([`7fdb73a`](https://github.com/nexhorat/EcommerceReinaBackend/commit/7fdb73a5093d607e30484eae75e6a529fe5a48ab))
+
+
 ## v1.7.2 (2025-12-18)
 
 ### Bug Fixes
