@@ -1,0 +1,6 @@
+
+verde oscuro: #062011
+verde lima claro: #77b043
+verde medio: #338449
+azul: #2f90d4
+blanco: #d6e7bc

@@ -101,7 +101,8 @@ class TestimonioSerializer(serializers.ModelSerializer):
             'cargo_empresa',
             'usuario_nombre',
             'usuario_foto',
-            'created_at'
+            'created_at',
+            'es_visible'
         ]
         read_only_fields = ['id', 'created_at', 'es_visible']
 
@@ -111,9 +112,26 @@ class TestimonioSerializer(serializers.ModelSerializer):
         if obj.usuario.foto_perfil and hasattr(obj.usuario.foto_perfil, 'url'):
             return request.build_absolute_uri(obj.usuario.foto_perfil.url)
         return None
+    
+class TestimonioAdminSerializer(TestimonioSerializer):
+    """
+    Serializador ADMIN:
+    - Hereda todo del anterior.
+    - Pero SOBRESCRIBE Meta para sacar 'es_visible' de read_only.
+    """
+
+    es_visible = serializers.BooleanField(read_only=False)
+    
+    class Meta(TestimonioSerializer.Meta):
+        # Mantenemos los mismos campos
+        fields = TestimonioSerializer.Meta.fields
+        # Quitamos 'es_visible' de solo lectura para que Swagger permita editarlo
+        read_only_fields = ['id', 'created_at']
 
 class BlogCardSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
+    imagen_card = serializers.ImageField(required=False, allow_null=True)
+
     class Meta:
         model = Blog
         fields = ['id', 'titulo', 'slug', 'fecha_publicacion', 'imagen_card', 'resumen', 'categoria_nombre', 'autor']
@@ -126,6 +144,10 @@ class BlogDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'slug', 'created_at']
 
 class ProtocoloCardSerializer(serializers.ModelSerializer):
+
+    imagen_card = serializers.ImageField(required=False, allow_null=True)
+    archivo_pdf = serializers.FileField(required=False, allow_null=True)
+    
     class Meta:
         model = Protocolo
         fields = ['id', 'titulo', 'slug', 'imagen_card', 'orden']

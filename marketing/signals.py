@@ -69,7 +69,10 @@ def enviar_notificacion_masiva(instance, tipo_contenido, titulo, resumen, imagen
 def notificar_nuevo_contenido(sender, instance, created, **kwargs):
     # Solo notificar si se acaba de crear y está publicado
     # Opcional: Podrías añadir lógica para detectar si cambió de borrador a publicado
-    if created and instance.publicado:
+
+    esta_publicado = getattr(instance, 'publicado', getattr(instance, 'es_visible', False))
+    
+    if created and esta_publicado:
         
         # Determinar tipo para el correo
         tipo = sender.__name__ # "Noticia", "Blog", etc.

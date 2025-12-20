@@ -2,8 +2,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from .managers import CustomUserManager 
+from marketing.mixins import WebPConverterMixin
 
-class User(AbstractUser):
+class User(WebPConverterMixin, AbstractUser):
     username = None 
     email = models.EmailField('Dirección de correo', unique=True)
     
@@ -37,3 +38,9 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.email} - {self.first_name} {self.last_name}"
+    
+    def save(self, *args, **kwargs):
+        if self.foto_perfil:
+            self.convertir_imagen_a_webp('foto_perfil')
+            
+        super().save(*args, **kwargs)

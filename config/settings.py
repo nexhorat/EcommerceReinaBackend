@@ -15,6 +15,7 @@ import environ
 import os
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
+from datetime import timedelta
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -199,6 +200,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 SPECTACULAR_SETTINGS = {
@@ -294,3 +297,18 @@ BOLD_ENVIRONMENT = os.getenv('BOLD_ENVIRONMENT', 'sandbox') # o 'production'
 
 # Tiempo en segundos (Ejemplo: 24 horas = 86400 segundos)
 PASSWORD_RESET_TIMEOUT = 900
+
+
+SIMPLE_JWT = {
+    # Aquí defines cuánto dura el token de acceso (ej: 1 hora)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
+    
+    # El token de refresco suele durar más (ej: 1 día)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    
+    # Opcional: Para que los tokens de refresco roten (seguridad extra)
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
+

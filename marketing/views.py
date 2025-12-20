@@ -1,5 +1,5 @@
-from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework import viewsets, permissions
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly, DjangoModelPermissions
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
@@ -24,6 +24,7 @@ from .serializers import (
     InvestigacionDetailSerializer,
     CertificacionSerializer,
     TestimonioSerializer,
+    TestimonioAdminSerializer,
     BlogCardSerializer,
     BlogDetailSerializer,
     ProtocoloDetailSerializer,
@@ -244,22 +245,71 @@ class CertificacionViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAdminUser()]
     
+# --- PERMISO PERSONALIZADO ---
+class IsGrupoAdministrador(permissions.BasePermission):
+    """
+    Permite el acceso solo si el usuario pertenece al grupo 'Administrador'
+    o es superusuario.
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.groups.filter(name='Administrador').exists() or request.user.is_superuser
+
 @extend_schema_view(
-    list=extend_schema(summary="Listar Testimonios Aprobados", description="Muestra solo las reseñas que han sido marcadas como visibles por el admin."),
-    create=extend_schema(summary="Crear un Testimonio", description="Requiere estar autenticado (Token). El usuario se asigna automáticamente."),
+    list=extend_schema(summary="Listar Testimonios", description="Público: Ver aprobados. Admin: Ver todos."),
+    create=extend_schema(summary="Crear Testimonio", description="Cualquier usuario autenticado."),
+    update=extend_schema(summary="Aprobar/Editar Testimonio", description="Solo Admin. Puede cambiar es_visible a true."),
+    destroy=extend_schema(summary="Eliminar Testimonio", description="Solo Admin."),
 )
 class TestimonioViewSet(viewsets.ModelViewSet):
     serializer_class = TestimonioSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    # 1. PERMISOS:
+    def get_permissions(self):
+        # Crear: Cualquier usuario logueado (Cliente o Admin)
+        if self.action == 'create':
+            return [IsAuthenticatedOrReadOnly()]
+        
+        # Editar, Borrar, Actualizar Parcial: SOLO GRUPO ADMINISTRADOR
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [IsGrupoAdministrador()]
+        
+        # Listar y Ver Detalle: Público (Cualquiera)
+        return [AllowAny()]
 
+    # 2. QUERYSET INTELIGENTE (FILTRO POR GRUPO):
     def get_queryset(self):
-        if self.action == 'list':
-             return Testimonio.objects.filter(es_visible=True)
-        return Testimonio.objects.all()
+        user = self.request.user
+        
+        # Verificamos si es del grupo Administrador
+        es_admin = user.is_authenticated and (
+            user.groups.filter(name='Administrador').exists() or user.is_superuser
+        )
+
+        # Si es Admin, ve TODOS (Pendientes y Aprobados) para poder moderar
+        if es_admin:
+            return Testimonio.objects.all().order_by('-created_at')
+        
+        # Si es Público/Cliente, solo ve los APROBADOS
+        return Testimonio.objects.filter(es_visible=True).order_by('-created_at')
+
+    # 3. SERIALIZADOR DINÁMICO:
+    def get_serializer_class(self):
+        user = self.request.user
+        es_admin = user.is_authenticated and (
+            user.groups.filter(name='Administrador').exists() or user.is_superuser
+        )
+
+        # Solo si es Admin y está editando, usamos el serializer que deja tocar 'es_visible'
+        if es_admin:
+            return TestimonioAdminSerializer
+            
+        # 3. Usuarios normales usan el serializer restringido
+        return TestimonioSerializer
 
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
-
 
 @extend_schema_view(
     list=extend_schema(summary="Listar Blog", parameters=[OpenApiParameter(name='categoria', type=int)]),
@@ -281,7 +331,10 @@ class BlogViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
-        return [IsAdminUser()]
+        
+        # CAMBIO AQUÍ: Usamos DjangoModelPermissions
+        # Esto revisará si el usuario tiene 'marketing.add_blog', 'marketing.change_blog', etc.
+        return [DjangoModelPermissions()]
 
 class CategoriaBlogViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
@@ -292,7 +345,7 @@ class CategoriaBlogViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
              return [AllowAny()]
-        return [IsAdminUser()]
+        return [DjangoModelPermissions()]
     
 
 @extend_schema_view(
@@ -303,18 +356,27 @@ class CategoriaBlogViewSet(viewsets.ModelViewSet):
     destroy=extend_schema(summary="Eliminar Protocolo", description="Solo Admin."),
 )
 class ProtocoloViewSet(viewsets.ModelViewSet):
+    # Por defecto mostramos solo los visibles, pero el get_queryset tiene la última palabra
     queryset = Protocolo.objects.filter(es_visible=True).order_by('orden')
     lookup_field = 'slug'
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     
-    # Buscador por si quieren buscar "Arroz"
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['titulo', 'contenido'] 
 
     def get_queryset(self):
-        # Si es admin ve todo (incluso ocultos), si es público solo visibles
-        if self.request.user.is_staff:
+        user = self.request.user
+        
+        # Validamos si es del grupo 'Administrador' o Superusuario
+        es_admin = user.is_authenticated and (
+            user.groups.filter(name='Administrador').exists() or user.is_superuser
+        )
+
+        # Si es Admin, ve TODO (incluyendo ocultos)
+        if es_admin:
             return Protocolo.objects.all().order_by('orden')
+            
+        # Si es Público, solo visibles
         return Protocolo.objects.filter(es_visible=True).order_by('orden')
 
     def get_serializer_class(self):
@@ -323,7 +385,10 @@ class ProtocoloViewSet(viewsets.ModelViewSet):
         return ProtocoloDetailSerializer
 
     def get_permissions(self):
-        # Lectura pública, Escritura privada
+        # Lectura pública
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
-        return [IsAdminUser()]
+            
+        # Escritura (Crear, Editar, Borrar): Solo Grupo Administrador
+        # (Reemplazamos IsAdminUser por IsGrupoAdministrador)
+        return [IsGrupoAdministrador()]

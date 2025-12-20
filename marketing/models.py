@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
+from .mixins import WebPConverterMixin
 
 
 class Categoria(models.Model):
@@ -32,7 +33,7 @@ class Categoria(models.Model):
 
 
 # Seccion nuestros servicios
-class Servicio(models.Model):
+class Servicio(WebPConverterMixin, models.Model):
     # -- campos de cards --
     titulo = models.CharField(max_length=100, verbose_name="Título del Servicio")
     slug = models.SlugField(unique=True, blank=True, help_text="Identificador para la URL")
@@ -61,14 +62,6 @@ class Servicio(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.titulo)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.titulo
-
     class Meta:
         verbose_name = "Servicio"
         verbose_name_plural = "Servicios"
@@ -76,9 +69,23 @@ class Servicio(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.titulo)
+        
+        if self.imagen_card:
+            self.convertir_imagen_a_webp('imagen_card')
+        
+        # Verificamos y convertimos el banner (si existe)
+        if self.imagen_banner:
+            self.convertir_imagen_a_webp('imagen_banner')
+
+        super().save(*args, **kwargs)
 
 
-class Noticia(models.Model):
+
+class Noticia(WebPConverterMixin, models.Model):
     # Relación: Una noticia pertenece a una categoría
     categoria = models.ForeignKey(
         Categoria, 
@@ -117,14 +124,21 @@ class Noticia(models.Model):
         verbose_name = "Noticia"
         verbose_name_plural = "Noticias"
 
+    def __str__(self):
+        return self.titulo
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.titulo)
-        super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.titulo
-    
+        if self.imagen_card:
+            self.convertir_imagen_a_webp('imagen_card')
+        
+        # Verificamos y convertimos el banner (si existe)
+        if self.imagen_banner:
+            self.convertir_imagen_a_webp('imagen_banner')
+
+        super().save(*args, **kwargs)
 
 
 class Investigacion(models.Model):
@@ -163,16 +177,26 @@ class Investigacion(models.Model):
         ordering = ['-fecha_publicacion']
         verbose_name = "Investigación"
         verbose_name_plural = "Investigaciones"
+    
+    def __str__(self):
+        return self.titulo
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.titulo)
+
+        if self.imagen_card:
+            self.convertir_imagen_a_webp('imagen_card')
+        
+        # Verificamos y convertimos el banner (si existe)
+        if self.imagen_banner:
+            self.convertir_imagen_a_webp('imagen_banner')
+
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.titulo
     
-class Certificacion(models.Model):
+    
+class Certificacion(WebPConverterMixin, models.Model):
     nombre = models.CharField(max_length=150, verbose_name="Nombre de la Certificación/Logro")
     descripcion = models.TextField(max_length=300, blank=True, verbose_name="Descripción Corta")
     
@@ -191,6 +215,12 @@ class Certificacion(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+    def save(self, *args, **kwargs):
+        if self.logo:
+            self.convertir_imagen_a_webp('logo')
+            
+        super().save(*args, **kwargs)
     
 
 class Testimonio(models.Model):
@@ -217,14 +247,14 @@ class Testimonio(models.Model):
     
     
 
-class Blog(models.Model):
+class Blog(WebPConverterMixin, models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='posts', limit_choices_to={'tipo': 'BLOG'})
     titulo = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     autor = models.CharField(max_length=100, default="Grupo Reina") # O ForeignKey a User
     fecha_publicacion = models.DateField(auto_now_add=True)
 
-    imagen_card = models.ImageField(upload_to='blog/cards/', verbose_name="Imagen Card")
+    imagen_card = models.ImageField(upload_to='blog/cards/', verbose_name="Imagen Card", blank=True, null=True)
     imagen_banner = models.ImageField(upload_to='blog/banners/', blank=True, null=True, verbose_name="Banner")
 
     resumen = models.TextField(max_length=400)
@@ -242,20 +272,28 @@ class Blog(models.Model):
         verbose_name = "Artículo de Blog"
         verbose_name_plural = "Blog"
 
+    def __str__(self):
+        return self.titulo
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.titulo)
+        
+        if self.imagen_card:
+            self.convertir_imagen_a_webp('imagen_card')
+        
+        if self.imagen_banner:
+            self.convertir_imagen_a_webp('imagen_banner')
+
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.titulo
     
-class Protocolo(models.Model):
+class Protocolo(WebPConverterMixin, models.Model):
     titulo = models.CharField(max_length=150, verbose_name="Nombre del Cultivo (ej: Batata)")
     slug = models.SlugField(unique=True, blank=True)
     
 
-    imagen_card = models.ImageField(upload_to='protocolos/cards/', verbose_name="Foto del Cultivo")
+    imagen_card = models.ImageField(upload_to='protocolos/cards/', verbose_name="Foto del Cultivo", blank=True, null=True)
 
     descripcion_tecnica = models.TextField(max_length=500, verbose_name="Descripción Técnica / Intro")
     resultados = models.TextField(max_length=300, blank=True, verbose_name="Resultados Esperados")
@@ -264,7 +302,9 @@ class Protocolo(models.Model):
     archivo_pdf = models.FileField(
         upload_to='protocolos/documentos/', 
         verbose_name="PDF Descargable",
-        help_text="Este es el archivo que bajará el usuario al dar clic en 'Descargar Protocolo'"
+        help_text="Este es el archivo que bajará el usuario al dar clic en 'Descargar Protocolo'",
+        blank=True, 
+        null=True
     )
     orden = models.PositiveIntegerField(default=0, help_text="Orden de aparición en la rejilla")
     es_visible = models.BooleanField(default=True)
@@ -280,6 +320,10 @@ class Protocolo(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.titulo)
+        
+        if self.imagen_card:
+            self.convertir_imagen_a_webp('imagen_card')
+            
         super().save(*args, **kwargs)
 
     def __str__(self):

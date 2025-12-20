@@ -1,10 +1,10 @@
 from django.db import models
 from django.conf import settings
-from marketing.models import Categoria # Usamos la categoría unificada
+from marketing.models import Categoria 
+from marketing.mixins import WebPConverterMixin
 
 
-
-class Producto(models.Model):
+class Producto(WebPConverterMixin, models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'PRODUCTO'}, related_name='productos')
     nombre = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
@@ -12,10 +12,17 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
     es_destacado = models.BooleanField(default=False)
-    imagen_principal = models.ImageField(upload_to='productos/')
+    imagen_principal = models.ImageField(upload_to='productos/', blank=True, null=True)
     
     # Sistema de Recomendación simple (Productos relacionados)
     relacionados = models.ManyToManyField('self', blank=True)
+
+    def save(self, *args, **kwargs):
+        # Solo llamas a la función mágica pasándole el NOMBRE del campo
+        if self.imagen_principal:
+            self.convertir_imagen_a_webp('imagen_principal')
+        
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre
