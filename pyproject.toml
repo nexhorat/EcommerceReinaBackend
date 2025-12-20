@@ -1,6 +1,6 @@
 [project]
 name = "ecommercereinabackend"
-version = "1.7.4"
+version = "1.8.0"
 description = "backend-django"
 authors = [
     {name = "Sebastian Cerquera",email = "sebartin9@gmail.com"}
