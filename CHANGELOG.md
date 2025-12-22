@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.1 (2025-12-22)
+
+### Bug Fixes
+
+- Ajuste de campos y endpoints
+  ([`7b6155e`](https://github.com/nexhorat/EcommerceReinaBackend/commit/7b6155e04d8d6acf7591d08b49c480a82e3b91dd))
+
+
 ## v1.8.0 (2025-12-20)
 
 
