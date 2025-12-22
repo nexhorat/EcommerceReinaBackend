@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.2 (2025-12-22)
+
+### Bug Fixes
+
+- Correciones en endpoints de productos
+  ([`e3cbcd1`](https://github.com/nexhorat/EcommerceReinaBackend/commit/e3cbcd191b158c1007b6d198f3c4cad3e69630ff))
+
+
 ## v1.8.1 (2025-12-22)
 
 ### Bug Fixes
