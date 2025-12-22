@@ -6,10 +6,10 @@ from marketing.mixins import WebPConverterMixin
 
 class Producto(WebPConverterMixin, models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, limit_choices_to={'tipo': 'PRODUCTO'}, related_name='productos')
-    nombre = models.CharField(max_length=200)
+    nombre = models.CharField(max_length=200, blank=True, null=True)
     slug = models.SlugField(unique=True)
-    descripcion = models.TextField()
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    descripcion = models.TextField(blank=True, null=True)
+    precio = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     stock = models.PositiveIntegerField(default=0)
     es_destacado = models.BooleanField(default=False)
     imagen_principal = models.ImageField(upload_to='productos/', blank=True, null=True)
@@ -59,11 +59,11 @@ class Direccion(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='direcciones')
     nombre_completo = models.CharField("Quien recibe", max_length=150)
     direccion = models.CharField("Dirección exacta", max_length=255)
-    ciudad = models.CharField(max_length=100)
-    departamento = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=20)
+    ciudad = models.CharField(max_length=100, blank=True, null=True)
+    departamento = models.CharField(max_length=100, blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
     referencia = models.CharField(max_length=255, blank=True, null=True, help_text="Apto, color casa, etc.")
-    es_principal = models.BooleanField(default=False)
+    es_principal = models.BooleanField(default=False, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.es_principal:

@@ -19,6 +19,7 @@ class ProductoDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Producto
         fields = '__all__'
+        read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'categoria_nombre']
 
 # --- CARRITO ---
 class ItemCarritoSerializer(serializers.ModelSerializer):
@@ -31,6 +32,7 @@ class ItemCarritoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemCarrito
         fields = ['id', 'producto', 'producto_id', 'cantidad', 'subtotal']
+        read_only_fields = ['id', 'producto_id']
 
     @extend_schema_field(serializers.DecimalField(max_digits=12, decimal_places=2))
     def get_subtotal(self, obj):
@@ -74,6 +76,7 @@ class FavoritoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorito
         fields = ['id', 'producto', 'producto_id', 'created_at']
+        read_only_fields = ['created_at', 'id', 'producto_id']
 
 class TarifaEnvioSerializer(serializers.ModelSerializer):
     class Meta:
