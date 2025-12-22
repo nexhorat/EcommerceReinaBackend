@@ -31,6 +31,18 @@ from .serializers import (
     ProtocoloCardSerializer
 )
 
+# --- PERMISO PERSONALIZADO (Definido al inicio para usar en todo el archivo) ---
+class IsGrupoAdministrador(permissions.BasePermission):
+    """
+    Permite el acceso solo si el usuario pertenece al grupo 'Administrador'
+    o es superusuario. Reemplaza la validación de is_staff.
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.groups.filter(name='Administrador').exists() or request.user.is_superuser
+
+
 @extend_schema_view(
     list=extend_schema(
         summary="Listar Categorías",
@@ -59,9 +71,8 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
-        return [IsAdminUser()]
-
-
+        # CAMBIO: Usamos IsGrupoAdministrador en lugar de IsAdminUser
+        return [IsGrupoAdministrador()]
 
 
 @extend_schema_view(
@@ -109,10 +120,9 @@ class ServicioViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+            return [AllowAny()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
 
 @extend_schema_view(
     list=extend_schema(
@@ -128,15 +138,13 @@ class CategoriaNoticiaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     lookup_field = 'slug'
     serializer_class = CategoriaSerializer
-    permission_classes = [IsAdminUser]
-
+    # Quitamos permission_classes de clase para manejarlo en get_permissions
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes] 
+            return [AllowAny()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
 
 @extend_schema_view(
     list=extend_schema(
@@ -161,7 +169,6 @@ class NoticiaViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     
-    
     filter_backends = [DjangoFilterBackend] 
     filterset_fields = ['categoria', 'es_destacada', 'publicado'] 
     lookup_field = 'slug'
@@ -173,10 +180,9 @@ class NoticiaViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+            return [AllowAny()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
 
 
 @extend_schema_view(
@@ -188,13 +194,14 @@ class NoticiaViewSet(viewsets.ModelViewSet):
 class CategoriaInvestigacionViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
-    permission_classes = [IsAdminUser] # Ajusta a AllowAny en get_permissions si quieres lectura pública
+    # Quitamos permission_classes de clase para manejarlo en get_permissions
     lookup_field = 'slug'
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
-        return [IsAdminUser()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
 
 
 @extend_schema_view(
@@ -225,7 +232,8 @@ class InvestigacionViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
-        return [IsAdminUser()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
     
 @extend_schema_view(
     list=extend_schema(summary="Listar Certificaciones", description="Muestra los logos y logros."),
@@ -243,18 +251,9 @@ class CertificacionViewSet(viewsets.ModelViewSet):
         # Cualquiera ve la lista, solo Admin crea/borra
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
-        return [IsAdminUser()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
     
-# --- PERMISO PERSONALIZADO ---
-class IsGrupoAdministrador(permissions.BasePermission):
-    """
-    Permite el acceso solo si el usuario pertenece al grupo 'Administrador'
-    o es superusuario.
-    """
-    def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False
-        return request.user.groups.filter(name='Administrador').exists() or request.user.is_superuser
 
 @extend_schema_view(
     list=extend_schema(summary="Listar Testimonios", description="Público: Ver aprobados. Admin: Ver todos."),
@@ -332,20 +331,20 @@ class BlogViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return [AllowAny()]
         
-        # CAMBIO AQUÍ: Usamos DjangoModelPermissions
-        # Esto revisará si el usuario tiene 'marketing.add_blog', 'marketing.change_blog', etc.
-        return [DjangoModelPermissions()]
+        # CAMBIO: Validación por Grupo Administrador (Estandarizado)
+        return [IsGrupoAdministrador()]
 
 class CategoriaBlogViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
-    permission_classes = [IsAdminUser] # Ajustar si quieres público
+    # permission_classes = [IsAdminUser]  <-- Eliminado para usar get_permissions
     lookup_field = 'slug'
     
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
              return [AllowAny()]
-        return [DjangoModelPermissions()]
+        # CAMBIO: Validación por Grupo Administrador
+        return [IsGrupoAdministrador()]
     
 
 @extend_schema_view(
@@ -390,5 +389,4 @@ class ProtocoloViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
             
         # Escritura (Crear, Editar, Borrar): Solo Grupo Administrador
-        # (Reemplazamos IsAdminUser por IsGrupoAdministrador)
         return [IsGrupoAdministrador()]

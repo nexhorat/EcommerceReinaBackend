@@ -5,7 +5,6 @@ from .views import (
     RegisterView, 
     CustomTokenObtainPairView, 
     UserProfileView, 
-    ChangePasswordView,
     RoleManagementViewSet,
     UserRoleAssignmentViewSet,
     PasswordResetConfirmView,
@@ -26,13 +25,12 @@ urlpatterns = [
     path('login/', CustomTokenObtainPairView.as_view(), name='auth_login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='auth_token_refresh'),
     path('perfil/', UserProfileView.as_view(), name='user-profile'),
-    path('perfil/cambiar-password/', ChangePasswordView.as_view(), name='change-password'),
     path('roles/', role_list, name='roles-list'),                     
     path('roles/<int:pk>/', role_detail, name='roles-detail'),        
     path('roles/permisos/', permisos_list, name='permisos-list'),     
     path('gestion-usuarios/', user_assign_list, name='user-assign-list'),       
     path('gestion-usuarios/<int:pk>/', user_assign_detail, name='user-assign-detail'), 
     path('password-reset/', PasswordResetRequestView.as_view(), name='password-reset-request'),
-    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    path('perfil/password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 ]
 

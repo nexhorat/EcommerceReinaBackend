@@ -36,26 +36,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if obj.is_superuser or obj.groups.filter(name='Administrador').exists():
             return 'ADMIN'
         return 'USER'    
-
-
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True, write_only=True, label="Contraseña actual")
-    new_password = serializers.CharField(required=True, write_only=True, label="Nueva contraseña")
-    confirm_password = serializers.CharField(required=True, write_only=True, label="Confirmar nueva contraseña")
-
-    def validate(self, attrs):
-        
-        if attrs['new_password'] != attrs['confirm_password']:
-            raise serializers.ValidationError({"new_password": "Las contraseñas nuevas no coinciden."})
-        
-        user = self.context['request'].user
-        try:
-            validate_password(attrs['new_password'], user)
-        except Exception as e:
-            raise serializers.ValidationError({"new_password": list(e.messages)})
-
-        return attrs
-    
+  
 # 1. Para listar los permisos disponibles (necesario para crear roles)
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:

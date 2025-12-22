@@ -17,6 +17,12 @@ paths:
         name: es_destacado
         schema:
           type: boolean
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       - in: query
         name: publicado
         schema:
@@ -31,9 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BlogCard'
+                $ref: '#/components/schemas/PaginatedBlogCardList'
           description: ''
     post:
       operationId: blog_create
@@ -164,6 +168,13 @@ paths:
     get:
       operationId: carrito_list
       description: Ver el carrito actual
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Tienda - Carrito
       security:
@@ -173,9 +184,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Carrito'
+                $ref: '#/components/schemas/PaginatedCarritoList'
           description: ''
   /api/carrito/{id}/eliminar/:
     delete:
@@ -233,6 +242,12 @@ paths:
         Noticias, Blog, etc.
       summary: Listar Categorías
       parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       - in: query
         name: tipo
         schema:
@@ -248,9 +263,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Categoria'
+                $ref: '#/components/schemas/PaginatedCategoriaList'
           description: ''
     post:
       operationId: categorias_create
@@ -386,6 +399,13 @@ paths:
       operationId: certificaciones_list
       description: Muestra los logos y logros.
       summary: Listar Certificaciones
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - certificaciones
       security:
@@ -396,9 +416,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Certificacion'
+                $ref: '#/components/schemas/PaginatedCertificacionList'
           description: ''
     post:
       operationId: certificaciones_create
@@ -537,6 +555,13 @@ paths:
   /api/direcciones/:
     get:
       operationId: direcciones_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Tienda - Direcciones
       security:
@@ -546,9 +571,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Direccion'
+                $ref: '#/components/schemas/PaginatedDireccionList'
           description: ''
     post:
       operationId: direcciones_create
@@ -678,6 +701,13 @@ paths:
   /api/favoritos/:
     get:
       operationId: favoritos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Tienda - Favoritos
       security:
@@ -687,9 +717,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Favorito'
+                $ref: '#/components/schemas/PaginatedFavoritoList'
           description: ''
     post:
       operationId: favoritos_create
@@ -830,6 +858,12 @@ paths:
         name: es_destacada
         schema:
           type: boolean
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       - in: query
         name: publicado
         schema:
@@ -844,9 +878,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InvestigacionCard'
+                $ref: '#/components/schemas/PaginatedInvestigacionCardList'
           description: ''
     post:
       operationId: investigaciones_create
@@ -991,6 +1023,12 @@ paths:
         schema:
           type: boolean
         description: Filtrar por true/false para mostrar solo destacadas
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       - in: query
         name: publicado
         schema:
@@ -1005,9 +1043,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NoticiaCard'
+                $ref: '#/components/schemas/PaginatedNoticiaCardList'
           description: ''
     post:
       operationId: noticias_create
@@ -1143,6 +1179,13 @@ paths:
   /api/pedidos/:
     get:
       operationId: pedidos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Tienda - Pedidos
       security:
@@ -1152,9 +1195,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pedido'
+                $ref: '#/components/schemas/PaginatedPedidoList'
           description: ''
     post:
       operationId: pedidos_create
@@ -1214,6 +1255,12 @@ paths:
         name: es_destacado
         schema:
           type: boolean
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       - name: search
         required: false
         in: query
@@ -1224,15 +1271,37 @@ paths:
       - Tienda - Productos
       security:
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProductoCard'
+                $ref: '#/components/schemas/PaginatedProductoCardList'
+          description: ''
+    post:
+      operationId: productos_create
+      tags:
+      - Tienda - Productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductoDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductoDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoDetail'
           description: ''
   /api/productos/{slug}/:
     get:
@@ -1247,7 +1316,6 @@ paths:
       - Tienda - Productos
       security:
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -1255,6 +1323,82 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProductoDetail'
           description: ''
+    put:
+      operationId: productos_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Tienda - Productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductoDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductoDetailRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoDetail'
+          description: ''
+    patch:
+      operationId: productos_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Tienda - Productos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductoDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductoDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductoDetailRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoDetail'
+          description: ''
+    delete:
+      operationId: productos_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Tienda - Productos
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/productos/recomendaciones/:
     get:
       operationId: productos_recomendaciones_retrieve
@@ -1263,7 +1407,6 @@ paths:
       - Tienda - Productos
       security:
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -1277,6 +1420,12 @@ paths:
       description: Devuelve la lista de cultivos para la rejilla principal.
       summary: Listar Protocolos (Grid)
       parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       - name: search
         required: false
         in: query
@@ -1293,9 +1442,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProtocoloCard'
+                $ref: '#/components/schemas/PaginatedProtocoloCardList'
           description: ''
     post:
       operationId: protocolos_create
@@ -1432,6 +1579,13 @@ paths:
       operationId: servicios_list
       description: Obtiene la lista ligera para el Landing.
       summary: Listar Servicios (Cards)
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - servicios
       security:
@@ -1442,9 +1596,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ServicioCard'
+                $ref: '#/components/schemas/PaginatedServicioCardList'
           description: ''
     post:
       operationId: servicios_create
@@ -1585,9 +1737,15 @@ paths:
   /api/testimonios/:
     get:
       operationId: testimonios_list
-      description: Muestra solo las reseñas que han sido marcadas como visibles por
-        el admin.
-      summary: Listar Testimonios Aprobados
+      description: 'Público: Ver aprobados. Admin: Ver todos.'
+      summary: Listar Testimonios
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - testimonios
       security:
@@ -1598,14 +1756,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Testimonio'
+                $ref: '#/components/schemas/PaginatedTestimonioList'
           description: ''
     post:
       operationId: testimonios_create
-      description: Requiere estar autenticado (Token). El usuario se asigna automáticamente.
-      summary: Crear un Testimonio
+      description: Cualquier usuario autenticado.
+      summary: Crear Testimonio
       tags:
       - testimonios
       requestBody:
@@ -1653,6 +1809,8 @@ paths:
           description: ''
     put:
       operationId: testimonios_update
+      description: Solo Admin. Puede cambiar es_visible a true.
+      summary: Aprobar/Editar Testimonio
       parameters:
       - in: path
         name: id
@@ -1716,6 +1874,8 @@ paths:
           description: ''
     delete:
       operationId: testimonios_destroy
+      description: Solo Admin.
+      summary: Eliminar Testimonio
       parameters:
       - in: path
         name: id
@@ -1734,6 +1894,13 @@ paths:
     get:
       operationId: usuarios_gestion_usuarios_list
       description: Solo para cambiar los roles de un usuario existente.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Gestión de Usuarios (Admin)
       security:
@@ -1743,9 +1910,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserRoleAssign'
+                $ref: '#/components/schemas/PaginatedUserRoleAssignList'
           description: ''
   /api/usuarios/gestion-usuarios/{id}/:
     get:
@@ -2048,6 +2213,13 @@ paths:
       operationId: usuarios_roles_list
       description: 'CRUD de Roles. Permite crear nuevos roles (ej: ''Analista'') y
         definir sus permisos.'
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Gestión de Roles (Admin)
       security:
@@ -2057,9 +2229,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Role'
+                $ref: '#/components/schemas/PaginatedRoleList'
           description: ''
     post:
       operationId: usuarios_roles_create
@@ -2257,6 +2427,7 @@ components:
         imagen_card:
           type: string
           format: uri
+          nullable: true
         resumen:
           type: string
           maxLength: 400
@@ -2270,7 +2441,6 @@ components:
       - categoria_nombre
       - fecha_publicacion
       - id
-      - imagen_card
       - resumen
       - titulo
     BlogDetail:
@@ -2299,6 +2469,7 @@ components:
         imagen_card:
           type: string
           format: uri
+          nullable: true
         imagen_banner:
           type: string
           format: uri
@@ -2331,7 +2502,6 @@ components:
       - created_at
       - fecha_publicacion
       - id
-      - imagen_card
       - resumen
       - slug
       - titulo
@@ -2350,6 +2520,7 @@ components:
         imagen_card:
           type: string
           format: binary
+          nullable: true
         imagen_banner:
           type: string
           format: binary
@@ -2372,7 +2543,6 @@ components:
           nullable: true
       required:
       - contenido
-      - imagen_card
       - resumen
       - titulo
     Carrito:
@@ -3038,6 +3208,351 @@ components:
       - imagen_card
       - resumen
       - titulo
+    PaginatedBlogCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogCard'
+    PaginatedCarritoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Carrito'
+    PaginatedCategoriaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Categoria'
+    PaginatedCertificacionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Certificacion'
+    PaginatedDireccionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Direccion'
+    PaginatedFavoritoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Favorito'
+    PaginatedInvestigacionCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvestigacionCard'
+    PaginatedNoticiaCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoticiaCard'
+    PaginatedPedidoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pedido'
+    PaginatedProductoCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductoCard'
+    PaginatedProtocoloCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProtocoloCard'
+    PaginatedRoleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+    PaginatedServicioCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServicioCard'
+    PaginatedTestimonioList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Testimonio'
+    PaginatedUserRoleAssignList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleAssign'
     PasswordChangeResponse:
       type: object
       properties:
@@ -3067,6 +3582,7 @@ components:
         imagen_card:
           type: string
           format: binary
+          nullable: true
         imagen_banner:
           type: string
           format: binary
@@ -3276,6 +3792,39 @@ components:
           type: integer
           nullable: true
           title: Categoría
+    PatchedProductoDetailRequest:
+      type: object
+      description: Vista completa para detalle
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+          minLength: 1
+        precio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        es_destacado:
+          type: boolean
+        imagen_principal:
+          type: string
+          format: binary
+          nullable: true
+        categoria:
+          type: integer
+          nullable: true
     PatchedProtocoloDetailRequest:
       type: object
       properties:
@@ -3287,6 +3836,7 @@ components:
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Foto del Cultivo
         descripcion_tecnica:
           type: string
@@ -3304,6 +3854,7 @@ components:
         archivo_pdf:
           type: string
           format: binary
+          nullable: true
           title: PDF Descargable
           description: Este es el archivo que bajará el usuario al dar clic en 'Descargar
             Protocolo'
@@ -3502,6 +4053,7 @@ components:
         imagen_principal:
           type: string
           format: uri
+          nullable: true
         es_destacado:
           type: boolean
         categoria_nombre:
@@ -3510,7 +4062,6 @@ components:
       required:
       - categoria_nombre
       - id
-      - imagen_principal
       - nombre
       - precio
       - slug
@@ -3534,10 +4085,10 @@ components:
         imagen_principal:
           type: string
           format: binary
+          nullable: true
         es_destacado:
           type: boolean
       required:
-      - imagen_principal
       - nombre
       - precio
       - slug
@@ -3578,6 +4129,7 @@ components:
         imagen_principal:
           type: string
           format: uri
+          nullable: true
         categoria:
           type: integer
           nullable: true
@@ -3585,10 +4137,47 @@ components:
       - categoria_nombre
       - descripcion
       - id
-      - imagen_principal
       - nombre
       - precio
       - relacionados
+      - slug
+    ProductoDetailRequest:
+      type: object
+      description: Vista completa para detalle
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        descripcion:
+          type: string
+          minLength: 1
+        precio:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        stock:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        es_destacado:
+          type: boolean
+        imagen_principal:
+          type: string
+          format: binary
+          nullable: true
+        categoria:
+          type: integer
+          nullable: true
+      required:
+      - descripcion
+      - nombre
+      - precio
       - slug
     ProtocoloCard:
       type: object
@@ -3607,15 +4196,18 @@ components:
         imagen_card:
           type: string
           format: uri
-          title: Foto del Cultivo
+          nullable: true
         orden:
           type: integer
           maximum: 2147483647
           minimum: 0
           description: Orden de aparición en la rejilla
+        archivo_pdf:
+          type: string
+          format: uri
+          nullable: true
       required:
       - id
-      - imagen_card
       - titulo
     ProtocoloDetail:
       type: object
@@ -3634,6 +4226,7 @@ components:
         imagen_card:
           type: string
           format: uri
+          nullable: true
           title: Foto del Cultivo
         descripcion_tecnica:
           type: string
@@ -3649,6 +4242,7 @@ components:
         archivo_pdf:
           type: string
           format: uri
+          nullable: true
           title: PDF Descargable
           description: Este es el archivo que bajará el usuario al dar clic en 'Descargar
             Protocolo'
@@ -3668,12 +4262,10 @@ components:
           format: date-time
           readOnly: true
       required:
-      - archivo_pdf
       - contenido
       - created_at
       - descripcion_tecnica
       - id
-      - imagen_card
       - slug
       - titulo
       - updated_at
@@ -3688,6 +4280,7 @@ components:
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Foto del Cultivo
         descripcion_tecnica:
           type: string
@@ -3705,6 +4298,7 @@ components:
         archivo_pdf:
           type: string
           format: binary
+          nullable: true
           title: PDF Descargable
           description: Este es el archivo que bajará el usuario al dar clic en 'Descargar
             Protocolo'
@@ -3716,10 +4310,8 @@ components:
         es_visible:
           type: boolean
       required:
-      - archivo_pdf
       - contenido
       - descripcion_tecnica
-      - imagen_card
       - titulo
     Role:
       type: object
@@ -3941,9 +4533,14 @@ components:
           type: string
           format: date-time
           readOnly: true
+        es_visible:
+          type: boolean
+          readOnly: true
+          title: ¿Aprobado para mostrar?
       required:
       - contenido
       - created_at
+      - es_visible
       - id
       - usuario_foto
       - usuario_nombre

@@ -22,7 +22,8 @@ class ServicioCardSerializer(serializers.ModelSerializer):
     Serializador optimizado para la lista (Landing Page).
     Solo envía la información visual de la tarjeta.
     """
-    
+    imagen_card = serializers.ImageField(required=False, allow_null=True)
+
     class Meta:
         model = Servicio
         fields = [
@@ -48,6 +49,7 @@ class ServicioDetailSerializer(serializers.ModelSerializer):
 class NoticiaCardSerializer(serializers.ModelSerializer):
     # Truco: Traer el nombre de la categoría en lugar del ID para mostrarlo bonito en la card
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
+    imagen_card = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Noticia
@@ -67,6 +69,7 @@ class NoticiaDetailSerializer(serializers.ModelSerializer):
 
 class InvestigacionCardSerializer(serializers.ModelSerializer):
     categoria_nombre = serializers.CharField(source='categoria.nombre', read_only=True)
+    imagen_card = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Investigacion
@@ -150,7 +153,7 @@ class ProtocoloCardSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Protocolo
-        fields = ['id', 'titulo', 'slug', 'imagen_card', 'orden']
+        fields = ['id', 'titulo', 'slug', 'imagen_card', 'orden', 'archivo_pdf']
 
 class ProtocoloDetailSerializer(serializers.ModelSerializer):
     class Meta:

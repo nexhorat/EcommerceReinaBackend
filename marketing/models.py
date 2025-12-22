@@ -35,27 +35,27 @@ class Categoria(models.Model):
 # Seccion nuestros servicios
 class Servicio(WebPConverterMixin, models.Model):
     # -- campos de cards --
-    titulo = models.CharField(max_length=100, verbose_name="Título del Servicio")
+    titulo = models.CharField(max_length=100, verbose_name="Título del Servicio", blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True, help_text="Identificador para la URL")
     orden = models.PositiveIntegerField(default=0, verbose_name="Orden de aparición", help_text="Menor número aparece primero (ej: 1, 2, 3...)")
-    imagen_card = models.ImageField(upload_to='servicios/cards/', verbose_name="Imagen Pequeña")
-    descripcion_corta = models.TextField(verbose_name="Descripción Corta (card)")
+    imagen_card = models.ImageField(upload_to='servicios/cards/', verbose_name="Imagen Pequeña", blank=True, null=True)
+    descripcion_corta = models.TextField(verbose_name="Descripción Corta (card)", blank=True, null=True)
     
     # -- campos de pagina detalle --
     # Banner principal (puede ser diferente a la de la card)
     imagen_banner = models.ImageField(upload_to='servicios/banners/', blank=True, null=True)
     
     # Sección: Summary
-    resumen = models.TextField(verbose_name="Summary / Resumen")
+    resumen = models.TextField(verbose_name="Summary / Resumen", blank=True, null=True)
 
     # Sección: What you get (Al tener viñetas y negritas, mejor usar RichText)
-    que_obtienes = CKEditor5Field(verbose_name="What you get / Qué obtienes")
+    que_obtienes = CKEditor5Field(verbose_name="What you get / Qué obtienes", blank=True, null=True)
 
     # Sección: Why it matters
-    por_que_importa = models.TextField(verbose_name="Why it matters / Por qué importa")
+    por_que_importa = models.TextField(verbose_name="Why it matters / Por qué importa", blank=True, null=True)
 
     # Sección: How it works (Pasos 1, 2, 3...)
-    como_funciona = CKEditor5Field(verbose_name="How it works / Cómo funciona")
+    como_funciona = CKEditor5Field(verbose_name="How it works / Cómo funciona", blank=True, null=True)
 
     # Sección: Optional Add-ons
     adicionales = CKEditor5Field(verbose_name="Optional Add-ons", blank=True, null=True)
@@ -96,25 +96,25 @@ class Noticia(WebPConverterMixin, models.Model):
         limit_choices_to={'tipo': 'NOTICIA'}
     )
 
-    titulo = models.CharField(max_length=200, verbose_name="Título de la Noticia")
+    titulo = models.CharField(max_length=200, verbose_name="Título de la Noticia", blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True)
     
     # Autor (Opcional: puede ser texto simple o relación con User)
-    autor = models.CharField(max_length=100, default="Grupo Reina", verbose_name="Autor")
+    autor = models.CharField(max_length=100, default="Grupo Reina", verbose_name="Autor", blank=True, null=True)
     
     # Fechas
-    fecha_publicacion = models.DateField(auto_now_add=True, verbose_name="Fecha de Publicación")
+    fecha_publicacion = models.DateField(auto_now_add=True, verbose_name="Fecha de Publicación", blank=True, null=True)
 
     # Multimedia
-    imagen_card = models.ImageField(upload_to='noticias/cards/', verbose_name="Imagen Pequeña (Card)")
+    imagen_card = models.ImageField(upload_to='noticias/cards/', verbose_name="Imagen Pequeña (Card)", blank=True, null=True)
     imagen_banner = models.ImageField(upload_to='noticias/banners/', blank=True, null=True, verbose_name="Banner Grande")
 
     # Contenido
-    resumen = models.TextField(max_length=400, verbose_name="Resumen corto (Intro)")
-    contenido = CKEditor5Field(verbose_name="Contenido Completo")
+    resumen = models.TextField(max_length=400, verbose_name="Resumen corto (Intro)", blank=True, null=True)
+    contenido = CKEditor5Field(verbose_name="Contenido Completo", blank=True, null=True)
 
-    publicado = models.BooleanField(default=True, verbose_name="¿Publicado?")
-    es_destacada = models.BooleanField(default=False, verbose_name="¿Es Destacada?")
+    publicado = models.BooleanField(default=True, verbose_name="¿Publicado?", blank=True, null=True)
+    es_destacada = models.BooleanField(default=False, verbose_name="¿Es Destacada?", blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -141,7 +141,7 @@ class Noticia(WebPConverterMixin, models.Model):
         super().save(*args, **kwargs)
 
 
-class Investigacion(models.Model):
+class Investigacion(WebPConverterMixin, models.Model):
     categoria = models.ForeignKey(
         Categoria, 
         on_delete=models.SET_NULL, 
@@ -151,20 +151,20 @@ class Investigacion(models.Model):
         limit_choices_to={'tipo': 'INVESTIGACION'}
     )
 
-    titulo = models.CharField(max_length=200, verbose_name="Título de la Investigación")
+    titulo = models.CharField(max_length=200, verbose_name="Título de la Investigación", blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True)
-    autor = models.CharField(max_length=100, default="Grupo Reina", verbose_name="Investigador/Autor")
-    fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación")
+    autor = models.CharField(max_length=100, default="Grupo Reina", verbose_name="Investigador/Autor", blank=True, null=True)
+    fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación", blank=True, null=True)
 
     # Multimedia
-    imagen_card = models.ImageField(upload_to='investigaciones/cards/', verbose_name="Imagen Pequeña (Card)")
+    imagen_card = models.ImageField(upload_to='investigaciones/cards/', verbose_name="Imagen Pequeña (Card)", blank=True, null=True)
     imagen_banner = models.ImageField(upload_to='investigaciones/banners/', blank=True, null=True, verbose_name="Banner Grande")
     
     archivo_pdf = models.FileField(upload_to='investigaciones/documentos/', blank=True, null=True, verbose_name="PDF Completo (Opcional)")
 
     # Contenido
-    resumen = models.TextField(max_length=500, verbose_name="Resumen Ejecutivo")
-    contenido = CKEditor5Field(verbose_name="Detalles de la Investigación", config_name='extends')
+    resumen = models.TextField(max_length=500, verbose_name="Resumen Ejecutivo", blank=True, null=True)
+    contenido = CKEditor5Field(verbose_name="Detalles de la Investigación", config_name='extends', blank=True, null=True)
 
     # Estados
     publicado = models.BooleanField(default=True)
@@ -197,13 +197,13 @@ class Investigacion(models.Model):
     
     
 class Certificacion(WebPConverterMixin, models.Model):
-    nombre = models.CharField(max_length=150, verbose_name="Nombre de la Certificación/Logro")
-    descripcion = models.TextField(max_length=300, blank=True, verbose_name="Descripción Corta")
+    nombre = models.CharField(max_length=150, verbose_name="Nombre de la Certificación/Logro", blank=True, null=True)
+    descripcion = models.TextField(max_length=300, blank=True, verbose_name="Descripción Corta", null=True)
     
-    logo = models.ImageField(upload_to='certificaciones/logos/', verbose_name="Logo o Ícono")
+    logo = models.ImageField(upload_to='certificaciones/logos/', verbose_name="Logo o Ícono", blank=True, null=True)
     url_validacion = models.URLField(blank=True, null=True, verbose_name="Enlace de Verificación (URL)")
 
-    orden = models.PositiveIntegerField(default=0, help_text="1 aparece primero, 2 después...")
+    orden = models.PositiveIntegerField(default=0, help_text="1 aparece primero, 2 después...", blank=True, null=True)
     es_visible = models.BooleanField(default=True, verbose_name="¿Visible en la web?")
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -231,9 +231,9 @@ class Testimonio(models.Model):
         verbose_name="Usuario que comenta"
     )
 
-    contenido = models.TextField(max_length=300, verbose_name="Reseña / Opinión")
-    cargo_empresa = models.CharField(max_length=100, blank=True, verbose_name="Cargo / Empresa (Opcional)")
-    es_visible = models.BooleanField(default=False, verbose_name="¿Aprobado para mostrar?")
+    contenido = models.TextField(max_length=300, verbose_name="Reseña / Opinión", blank=True, null=True)
+    cargo_empresa = models.CharField(max_length=100, blank=True, verbose_name="Cargo / Empresa (Opcional)", null=True)
+    es_visible = models.BooleanField(default=False, verbose_name="¿Aprobado para mostrar?", blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -249,16 +249,16 @@ class Testimonio(models.Model):
 
 class Blog(WebPConverterMixin, models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='posts', limit_choices_to={'tipo': 'BLOG'})
-    titulo = models.CharField(max_length=200)
+    titulo = models.CharField(max_length=200, blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True)
-    autor = models.CharField(max_length=100, default="Grupo Reina") # O ForeignKey a User
+    autor = models.CharField(max_length=100, default="Grupo Reina", blank=True, null=True) # O ForeignKey a User
     fecha_publicacion = models.DateField(auto_now_add=True)
 
     imagen_card = models.ImageField(upload_to='blog/cards/', verbose_name="Imagen Card", blank=True, null=True)
     imagen_banner = models.ImageField(upload_to='blog/banners/', blank=True, null=True, verbose_name="Banner")
 
     resumen = models.TextField(max_length=400)
-    contenido = CKEditor5Field(verbose_name="Contenido del Artículo", config_name='extends')
+    contenido = CKEditor5Field(verbose_name="Contenido del Artículo", config_name='extends', blank=True, null=True)
 
     # Estados
     publicado = models.BooleanField(default=True)
@@ -289,15 +289,15 @@ class Blog(WebPConverterMixin, models.Model):
 
     
 class Protocolo(WebPConverterMixin, models.Model):
-    titulo = models.CharField(max_length=150, verbose_name="Nombre del Cultivo (ej: Batata)")
+    titulo = models.CharField(max_length=150, verbose_name="Nombre del Cultivo (ej: Batata)", blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True)
     
 
     imagen_card = models.ImageField(upload_to='protocolos/cards/', verbose_name="Foto del Cultivo", blank=True, null=True)
 
-    descripcion_tecnica = models.TextField(max_length=500, verbose_name="Descripción Técnica / Intro")
-    resultados = models.TextField(max_length=300, blank=True, verbose_name="Resultados Esperados")
-    contenido = CKEditor5Field(verbose_name="Pasos del Protocolo", config_name='extends')
+    descripcion_tecnica = models.TextField(max_length=500, verbose_name="Descripción Técnica / Intro", blank=True, null=True)
+    resultados = models.TextField(max_length=300, blank=True, verbose_name="Resultados Esperados", null=True)
+    contenido = CKEditor5Field(verbose_name="Pasos del Protocolo", config_name='extends', blank=True, null=True)
 
     archivo_pdf = models.FileField(
         upload_to='protocolos/documentos/', 

@@ -27,7 +27,6 @@ from .serializers import (
     RoleSerializer, 
     UserRoleAssignSerializer, 
     PermissionSerializer, 
-    ChangePasswordSerializer,
     PasswordResetRequestSerializer,
     SetNewPasswordSerializer
 )
@@ -95,64 +94,6 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
     
-
-@extend_schema(
-    summary="Cambiar Contraseña",
-    description="Requiere la contraseña anterior y la nueva repetida dos veces.",
-    responses={
-        200: inline_serializer(
-            name='PasswordChangeResponse',
-            fields={
-                'detail': serializers.CharField(default="Contraseña actualizada correctamente.")
-            }
-        )
-    }
-)
-class ChangePasswordView(generics.UpdateAPIView):
-    serializer_class = ChangePasswordSerializer
-    permission_classes = [IsAuthenticated]
-    queryset = User.objects.all()
-
-    def get_object(self):
-        if getattr(self, 'swagger_fake_view', False):
-            return None 
-            
-        return self.request.user
-
-    def update(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            # 1. Verificar contraseña vieja
-            if not self.object.check_password(serializer.data.get("old_password")):
-                return Response(
-                    {"old_password": ["La contraseña actual es incorrecta."]}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            # 2. Guardar nueva contraseña
-            self.object.set_password(serializer.data.get("new_password"))
-            self.object.save()
-            
-            # 3. ENVIAR CORREO DE NOTIFICACIÓN
-            try:
-                send_mail(
-                    subject='Alerta de Seguridad: Tu contraseña ha cambiado',
-                    message=f'Hola {self.object.first_name}, te informamos que tu contraseña fue actualizada exitosamente.',
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[self.object.email],
-                    fail_silently=False,
-                )
-            except Exception as e:
-                print(f"Error enviando correo de cambio de pass: {e}")
-
-            return Response(
-                {"detail": "Contraseña actualizada correctamente."}, 
-                status=status.HTTP_200_OK
-            )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # A. Vista para Crear/Editar los ROLES (Grupos) y sus Permisos
 @extend_schema(tags=['Gestión de Roles (Admin)'])
