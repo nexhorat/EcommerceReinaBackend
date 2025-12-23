@@ -1,11 +1,12 @@
 from rest_framework import viewsets, status, filters, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db import transaction
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
 from .permissions import IsAdminOrReadOnly, IsDespachadorOrAdmin 
 
@@ -13,7 +14,7 @@ from .models import Producto, Carrito, ItemCarrito, Pedido, DetallePedido, Favor
 from .serializers import (
     ProductoCardSerializer, ProductoDetailSerializer, 
     CarritoSerializer, ItemCarritoSerializer, 
-    PedidoSerializer, FavoritoSerializer, DireccionSerializer
+    PedidoSerializer, FavoritoSerializer, DireccionSerializer, ErrorResponseSerializer
 )
 from store import serializers
 
@@ -66,7 +67,11 @@ class CarritoViewSet(viewsets.GenericViewSet):
     @extend_schema(
         summary="Agregar Item",
         request=ItemCarritoSerializer,
-        responses=CarritoSerializer
+        responses={
+            200: CarritoSerializer,
+            400: OpenApiResponse(response=ErrorResponseSerializer, description="Stock insuficiente o datos inválidos"),
+            404: OpenApiResponse(response=ErrorResponseSerializer, description="Producto no encontrado")
+        }
     )
     @action(detail=False, methods=['post'], url_path='agregar')
     def agregar_item(self, request):
@@ -74,11 +79,13 @@ class CarritoViewSet(viewsets.GenericViewSet):
         producto_id = request.data.get('producto_id')
         cantidad = int(request.data.get('cantidad', 1))
 
+        # get_object_or_404 lanza excepción estándar si falla
         producto = get_object_or_404(Producto, id=producto_id)
 
         # Verificar stock
         if producto.stock < cantidad:
-            return Response({'error': 'No hay suficiente stock'}, status=400)
+            # REEMPLAZO: raise ValidationError en lugar de return Response manual
+            raise ValidationError({"detail": f"No hay suficiente stock. Disponible: {producto.stock}"})
 
         item, created = ItemCarrito.objects.get_or_create(
             carrito=cart, producto=producto,
@@ -129,42 +136,46 @@ class PedidoViewSet(viewsets.ModelViewSet):
         
         return Pedido.objects.filter(usuario=self.request.user).order_by('-created_at')
 
-    @extend_schema(summary="Checkout (Crear Pedido con Cálculo de Envío)")
+    @extend_schema(
+        summary="Checkout (Crear Pedido)",
+        description="Crea un pedido validando stock y calculando envío.",
+        responses={
+            201: PedidoSerializer,
+            400: OpenApiResponse(response=ErrorResponseSerializer, description="Error de validación (Carrito vacío, stock insuficiente, etc)"),
+            404: OpenApiResponse(response=ErrorResponseSerializer, description="Dirección o recurso no encontrado"),
+            500: OpenApiResponse(response=ErrorResponseSerializer, description="Error interno del servidor")
+        }
+    )
     def create(self, request, *args, **kwargs):
         # 1. Validar carrito
         try:
             carrito = Carrito.objects.get(usuario=request.user)
         except Carrito.DoesNotExist:
-            return Response({"error": "El carrito está vacío"}, status=400)
+            raise ValidationError({"detail": "El carrito no existe o está vacío."})
         
         items = carrito.items.all()
         if not items.exists():
-            return Response({"error": "El carrito está vacío"}, status=400)
+            raise ValidationError({"detail": "El carrito está vacío, agrega productos antes de pagar."})
 
         # 2. Validar Dirección
         direccion_id = request.data.get('direccion_id')
         if not direccion_id:
-            return Response({"error": "Debes enviar el 'direccion_id'"}, status=400)
+            raise ValidationError({"direccion_id": "Este campo es obligatorio."})
         
         direccion = get_object_or_404(Direccion, id=direccion_id, usuario=request.user)
 
-        # 3. Calcular Costo de Envío (Tu Lógica de Negocio)
+        # 3. Calcular Costo de Envío
         try:
             tarifa = TarifaEnvio.objects.get(ciudad__iexact=direccion.ciudad)
             costo_envio = tarifa.precio_base
             
-            # REGLA: Si lleva más de 5 productos, cobramos extra por peso/volumen
             cantidad_total = sum(item.cantidad for item in items)
             if cantidad_total > 5:
                 extra = (cantidad_total - 5) * tarifa.precio_extra_producto
                 costo_envio += extra
                 
         except TarifaEnvio.DoesNotExist:
-            # Si no hay tarifa para esa ciudad, decidimos qué hacer:
-            # Opción A: Error (No cubrimos esa zona)
-            return Response({"error": f"Lo sentimos, no tenemos cobertura configurada para {direccion.ciudad}"}, status=400)
-            # Opción B: Costo por defecto (descomentar si prefieres esto)
-            # costo_envio = 20000 
+            raise ValidationError({"detail": f"Lo sentimos, no tenemos cobertura configurada para {direccion.ciudad}"})
 
         # 4. Crear Pedido (Transacción Atómica)
         with transaction.atomic():
@@ -180,22 +191,25 @@ class PedidoViewSet(viewsets.ModelViewSet):
 
             subtotal_acumulado = 0
             for item in items:
-                # Validar Stock
-                if item.producto.stock < item.cantidad:
-                    raise serializers.ValidationError(f"Stock insuficiente para {item.producto.nombre}")
+                producto_actual = Producto.objects.select_for_update().get(id=item.producto.id)
+
+                if producto_actual.stock < item.cantidad:
+                    raise ValidationError({
+                        "detail": f"Stock insuficiente para el producto {producto_actual.nombre}. Disponible: {producto_actual.stock}"
+                    })
                 
                 DetallePedido.objects.create(
                     pedido=pedido,
-                    producto=item.producto,
+                    producto=producto_actual,
                     cantidad=item.cantidad,
-                    precio_unitario=item.producto.precio
+                    precio_unitario=producto_actual.precio
                 )
                 
                 # Descontar inventario
-                item.producto.stock -= item.cantidad
-                item.producto.save()
+                producto_actual.stock -= item.cantidad
+                producto_actual.save()
                 
-                subtotal_acumulado += item.cantidad * item.producto.precio
+                subtotal_acumulado += item.cantidad * producto_actual.precio
 
             # Totales Finales
             pedido.subtotal = subtotal_acumulado

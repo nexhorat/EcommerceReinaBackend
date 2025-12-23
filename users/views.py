@@ -1,25 +1,25 @@
-from rest_framework import generics, status, serializers, viewsets, filters
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError, APIException
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.core.mail import send_mail
 from django.conf import settings
 from .permissions import IsAdministrador
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.urls import reverse
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+import logging
 
 # Importaciones de Spectacular
-from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiResponse
+from store.serializers import ErrorResponseSerializer
 
 from .serializers import (
     UserRegisterSerializer, 
@@ -31,15 +31,16 @@ from .serializers import (
     SetNewPasswordSerializer
 )
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 @extend_schema(
     tags=['Autenticación'],
-    summary="Registrar un nuevo usuario",
-    description="Crea un usuario con rol USER por defecto. Requiere email, nombres y contraseña.",
+    summary="Registrar Usuario",
     responses={
-        201: OpenApiResponse(response=UserRegisterSerializer, description="Usuario creado exitosamente (incluye mensaje 'detail')."),
-        400: OpenApiResponse(description="Error de validación (email ya existe o contraseña inválida).")
+        201: UserRegisterSerializer,
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Email duplicado o contraseña débil"),
+        500: OpenApiResponse(response=ErrorResponseSerializer, description="Error interno")
     }
 )
 class RegisterView(generics.CreateAPIView):
@@ -51,10 +52,9 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+
         headers = self.get_success_headers(serializer.data)
-        
         response_data = dict(serializer.data)
-        
         response_data['detail'] = "Usuario registrado exitosamente."
 
         return Response(
@@ -65,24 +65,24 @@ class RegisterView(generics.CreateAPIView):
 
 @extend_schema(
     tags=['Autenticación'],
-    summary="Iniciar Sesión (Obtener Tokens)",
-    description="Envía email y password para obtener los tokens 'access' y 'refresh'.",
+    summary="Login (Tokens)",
     responses={
-        200: OpenApiResponse(description="Tokens de acceso y refresco generados correctamente."),
-        401: OpenApiResponse(description="Credenciales inválidas (email o contraseña incorrectos).")
+        200: OpenApiResponse(description="Tokens JWT generados"),
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Credenciales inválidas"),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Faltan datos")
     }
 )
 class CustomTokenObtainPairView(TokenObtainPairView):
     pass
 
 @extend_schema(
-    summary="Ver o Editar Mi Perfil",
-    description="Permite al usuario logueado ver sus datos, cambiar nombre/teléfono y SUBIR SU FOTO.",
+    tags=['Autenticación'],
+    summary="Perfil de Usuario",
     methods=["GET", "PUT", "PATCH"],
     responses={
         200: UserProfileSerializer,
-        401: OpenApiResponse(description="No autenticado. Token faltante o inválido."),
-        400: OpenApiResponse(description="Datos de entrada inválidos.")
+        401: OpenApiResponse(response=ErrorResponseSerializer, description="Token inválido o expirado"),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Datos de perfil inválidos")
     }
 )
 class UserProfileView(generics.RetrieveUpdateAPIView):
@@ -105,6 +105,10 @@ class RoleManagementViewSet(viewsets.ModelViewSet):
     serializer_class = RoleSerializer
     permission_classes = [IsAdministrador]
 
+    @extend_schema(
+        summary="Listar Permisos Disponibles",
+        responses={200: PermissionSerializer(many=True)}
+    )
     @action(detail=False, methods=['get'])
     def permisos_disponibles(self, request):
         """Lista todos los permisos del sistema para que el Admin elija cuáles asignar."""
@@ -128,10 +132,12 @@ class UserRoleAssignmentViewSet(viewsets.ModelViewSet):
 # A. Solicitar Link de Recuperación
 @extend_schema(
     tags=['Autenticación'],
-    summary="Solicitar recuperación de contraseña",
-    description="Envía un correo con un link/token al usuario si el email existe.",
+    summary="Recuperar Contraseña (Solicitud)",
     request=PasswordResetRequestSerializer,
-    responses={200: OpenApiResponse(description="Correo enviado (o simulado si no existe el user).")}
+    responses={
+        200: OpenApiResponse(description="Siempre retorna 200 para evitar enumeración de usuarios."),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Email inválido")
+    }
 )
 class PasswordResetRequestView(generics.GenericAPIView):
     serializer_class = PasswordResetRequestSerializer
@@ -143,18 +149,18 @@ class PasswordResetRequestView(generics.GenericAPIView):
         email = serializer.validated_data['email']
 
         # Buscamos el usuario (Si no existe, no decimos nada por seguridad)
-        if User.objects.filter(email=email).exists():
-            user = User.objects.get(email=email)
+        user_qs = User.objects.filter(email=email)
+        if user_qs.exists():
+            user = user_qs.first()
             
             # 1. Generar Token y UID
             uidb64 = urlsafe_base64_encode(force_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             
             # 2. Crear Link (Ajusta esto a la URL de tu Frontend en React/Angular)
-            # Ejemplo: https://mitienda.com/reset-password/MTU/asz-123...
-            # Por ahora usaremos una URL genérica de ejemplo:
-            domain = "http://127.0.0.1:8000" # Cambiar por tu dominio real
-            link = f"{domain}/api/usuarios/password-reset/{uidb64}/{token}/"
+            # Ajustar dominio según variable de entorno en prod
+            domain = getattr(settings, 'FRONTEND_URL', "http://localhost:3000")
+            link = f"{domain}/reset-password/{uidb64}/{token}"
             
             # 3. Enviar Correo
             try:
@@ -174,7 +180,7 @@ class PasswordResetRequestView(generics.GenericAPIView):
                 msg.send()
                 
             except Exception as e:
-                return Response({'error': 'Error enviando el correo'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                logger.error(f"Fallo envío email recuperación para {email}: {str(e)}")
 
         return Response({'detail': 'Si el correo existe, recibirás un enlace de recuperación.'}, status=status.HTTP_200_OK)
 
@@ -184,7 +190,10 @@ class PasswordResetRequestView(generics.GenericAPIView):
     summary="Confirmar nueva contraseña",
     description="Recibe el token, el uidb64 (del correo) y la nueva contraseña para efectuar el cambio.",
     request=SetNewPasswordSerializer,
-    responses={200: OpenApiResponse(description="Contraseña restablecida exitosamente.")}
+    responses={
+        200: OpenApiResponse(description="Contraseña actualizada"),
+        400: OpenApiResponse(response=ErrorResponseSerializer, description="Token inválido o passwords no coinciden")
+    }
 )
 class PasswordResetConfirmView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer

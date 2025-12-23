@@ -87,3 +87,8 @@ class DireccionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Direccion
         fields = ['id', 'nombre_completo', 'direccion', 'ciudad', 'departamento', 'telefono', 'referencia', 'es_principal']
+
+class ErrorResponseSerializer(serializers.Serializer):
+    detail = serializers.CharField(help_text="Descripción legible del error")
+    code = serializers.CharField(help_text="Código de error para el frontend")
+    errors = serializers.DictField(required=False, help_text="Detalle de errores por campo (si aplica)")

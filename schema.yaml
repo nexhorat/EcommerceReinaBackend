@@ -39,6 +39,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedBlogCardList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: blog_create
       description: Solo Admin
@@ -66,6 +90,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/BlogDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/blog/{slug}/:
     get:
       operationId: blog_retrieve
@@ -88,8 +136,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/BlogDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     put:
       operationId: blog_update
+      summary: Editar Post
       parameters:
       - in: path
         name: slug
@@ -119,6 +192,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/BlogDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: blog_partial_update
       parameters:
@@ -151,6 +248,7 @@ paths:
           description: ''
     delete:
       operationId: blog_destroy
+      summary: Eliminar Post
       parameters:
       - in: path
         name: slug
@@ -162,8 +260,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/carrito/:
     get:
       operationId: carrito_list
@@ -235,6 +355,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Carrito'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Stock insuficiente o datos inválidos
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Producto no encontrado
   /api/categorias/:
     get:
       operationId: categorias_list
@@ -265,6 +397,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedCategoriaList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: categorias_create
       description: Solo Admin
@@ -292,6 +448,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Categoria'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/categorias/{slug}/:
     get:
       operationId: categorias_retrieve
@@ -314,6 +494,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Categoria'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     put:
       operationId: categorias_update
       description: Solo Admin
@@ -347,6 +551,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Categoria'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: categorias_partial_update
       parameters:
@@ -392,8 +620,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/certificaciones/:
     get:
       operationId: certificaciones_list
@@ -418,6 +668,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedCertificacionList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: certificaciones_create
       description: Sube el logo y opcionalmente la URL de validación.
@@ -435,7 +709,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CertificacionRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -445,6 +718,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Certificacion'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/certificaciones/{id}/:
     get:
       operationId: certificaciones_retrieve
@@ -492,7 +789,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CertificacionRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -502,6 +798,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Certificacion'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: certificaciones_partial_update
       parameters:
@@ -550,8 +870,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/direcciones/:
     get:
       operationId: direcciones_list
@@ -880,6 +1222,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedInvestigacionCardList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: investigaciones_create
       description: Solo Admin. Soporta carga de archivos.
@@ -897,7 +1263,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InvestigacionDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -907,6 +1272,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvestigacionDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/investigaciones/{slug}/:
     get:
       operationId: investigaciones_retrieve
@@ -930,8 +1319,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvestigacionDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     put:
       operationId: investigaciones_update
+      summary: Editar Investigación
       parameters:
       - in: path
         name: slug
@@ -951,7 +1365,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InvestigacionDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -961,6 +1374,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvestigacionDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: investigaciones_partial_update
       parameters:
@@ -993,6 +1430,7 @@ paths:
           description: ''
     delete:
       operationId: investigaciones_destroy
+      summary: Eliminar Investigación
       parameters:
       - in: path
         name: slug
@@ -1004,8 +1442,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/noticias/:
     get:
       operationId: noticias_list
@@ -1045,6 +1505,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedNoticiaCardList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: noticias_create
       description: Solo Admin. Recuerda enviar imagen_card e imagen_banner.
@@ -1062,7 +1546,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NoticiaDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1072,6 +1555,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/NoticiaDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/noticias/{slug}/:
     get:
       operationId: noticias_retrieve
@@ -1096,6 +1603,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/NoticiaDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     put:
       operationId: noticias_update
       description: Solo Admin.
@@ -1119,7 +1650,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NoticiaDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1129,6 +1659,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/NoticiaDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: noticias_partial_update
       parameters:
@@ -1174,8 +1728,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/pedidos/:
     get:
       operationId: pedidos_list
@@ -1199,7 +1775,8 @@ paths:
           description: ''
     post:
       operationId: pedidos_create
-      summary: Checkout (Crear Pedido con Cálculo de Envío)
+      description: Crea un pedido validando stock y calculando envío.
+      summary: Checkout (Crear Pedido)
       tags:
       - Tienda - Pedidos
       requestBody:
@@ -1222,6 +1799,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pedido'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación (Carrito vacío, stock insuficiente, etc)
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Dirección o recurso no encontrado
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/pedidos/{id}/:
     get:
       operationId: pedidos_retrieve
@@ -1293,7 +1888,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/ProductoDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1344,7 +1938,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/ProductoDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1444,6 +2037,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedProtocoloCardList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: protocolos_create
       description: Solo Admin. Requiere PDF.
@@ -1461,7 +2078,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProtocoloDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1471,6 +2087,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProtocoloDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/protocolos/{slug}/:
     get:
       operationId: protocolos_retrieve
@@ -1494,6 +2134,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProtocoloDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     put:
       operationId: protocolos_update
       description: Solo Admin.
@@ -1517,7 +2181,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProtocoloDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1527,6 +2190,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProtocoloDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: protocolos_partial_update
       parameters:
@@ -1572,8 +2259,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/servicios/:
     get:
       operationId: servicios_list
@@ -1598,6 +2307,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedServicioCardList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: servicios_create
       description: Crea un servicio nuevo. Requiere autenticación.
@@ -1615,7 +2348,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ServicioDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1625,6 +2357,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServicioDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/servicios/{slug}/:
     get:
       operationId: servicios_retrieve
@@ -1649,6 +2405,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServicioDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     put:
       operationId: servicios_update
       description: Reemplaza toda la información del servicio.
@@ -1673,7 +2453,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ServicioDetailRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1683,6 +2462,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServicioDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: servicios_partial_update
       description: Actualiza solo algunos campos del servicio.
@@ -1716,6 +2519,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServicioDetail'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     delete:
       operationId: servicios_destroy
       description: Borra un servicio permanentemente.
@@ -1732,8 +2559,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/testimonios/:
     get:
       operationId: testimonios_list
@@ -1758,6 +2607,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedTestimonioList'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     post:
       operationId: testimonios_create
       description: Cualquier usuario autenticado.
@@ -1775,7 +2648,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/TestimonioRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1785,6 +2657,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Testimonio'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/testimonios/{id}/:
     get:
       operationId: testimonios_retrieve
@@ -1831,7 +2727,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/TestimonioRequest'
-        required: true
       security:
       - jwtAuth: []
       responses:
@@ -1839,10 +2734,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Testimonio'
+                $ref: '#/components/schemas/TestimonioAdmin'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     patch:
       operationId: testimonios_partial_update
+      summary: Actualización Parcial Testimonio
       parameters:
       - in: path
         name: id
@@ -1870,8 +2790,32 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Testimonio'
+                $ref: '#/components/schemas/TestimonioAdmin'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
     delete:
       operationId: testimonios_destroy
       description: Solo Admin.
@@ -1888,8 +2832,30 @@ paths:
       security:
       - jwtAuth: []
       responses:
-        '204':
-          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error de validación o datos mal formados
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No autenticado
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: No tienes permisos para esta acción
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno del servidor
   /api/usuarios/gestion-usuarios/:
     get:
       operationId: usuarios_gestion_usuarios_list
@@ -1967,8 +2933,10 @@ paths:
   /api/usuarios/login/:
     post:
       operationId: usuarios_login_create
-      description: Envía email y password para obtener los tokens 'access' y 'refresh'.
-      summary: Iniciar Sesión (Obtener Tokens)
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      summary: Login (Tokens)
       tags:
       - Autenticación
       requestBody:
@@ -1985,14 +2953,23 @@ paths:
         required: true
       responses:
         '200':
-          description: Tokens de acceso y refresco generados correctamente.
+          description: Tokens JWT generados
         '401':
-          description: Credenciales inválidas (email o contraseña incorrectos).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Credenciales inválidas
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Faltan datos
   /api/usuarios/password-reset/:
     post:
       operationId: usuarios_password_reset_create
-      description: Envía un correo con un link/token al usuario si el email existe.
-      summary: Solicitar recuperación de contraseña
+      summary: Recuperar Contraseña (Solicitud)
       tags:
       - Autenticación
       requestBody:
@@ -2012,10 +2989,118 @@ paths:
       - {}
       responses:
         '200':
-          description: Correo enviado (o simulado si no existe el user).
-  /api/usuarios/password-reset-confirm/:
+          description: Siempre retorna 200 para evitar enumeración de usuarios.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Email inválido
+  /api/usuarios/perfil/:
+    get:
+      operationId: usuarios_perfil_retrieve
+      summary: Perfil de Usuario
+      tags:
+      - Autenticación
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Token inválido o expirado
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Datos de perfil inválidos
+    put:
+      operationId: usuarios_perfil_update
+      summary: Perfil de Usuario
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Token inválido o expirado
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Datos de perfil inválidos
     patch:
-      operationId: usuarios_password_reset_confirm_partial_update
+      operationId: usuarios_perfil_partial_update
+      summary: Perfil de Usuario
+      tags:
+      - Autenticación
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Token inválido o expirado
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Datos de perfil inválidos
+  /api/usuarios/perfil/password-reset-confirm/:
+    patch:
+      operationId: usuarios_perfil_password_reset_confirm_partial_update
       description: Recibe el token, el uidb64 (del correo) y la nueva contraseña para
         efectuar el cambio.
       summary: Confirmar nueva contraseña
@@ -2037,151 +3122,17 @@ paths:
       - {}
       responses:
         '200':
-          description: Contraseña restablecida exitosamente.
-  /api/usuarios/perfil/:
-    get:
-      operationId: usuarios_perfil_retrieve
-      description: Permite al usuario logueado ver sus datos, cambiar nombre/teléfono
-        y SUBIR SU FOTO.
-      summary: Ver o Editar Mi Perfil
-      tags:
-      - usuarios
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-          description: ''
-        '401':
-          description: No autenticado. Token faltante o inválido.
+          description: Contraseña actualizada
         '400':
-          description: Datos de entrada inválidos.
-    put:
-      operationId: usuarios_perfil_update
-      description: Permite al usuario logueado ver sus datos, cambiar nombre/teléfono
-        y SUBIR SU FOTO.
-      summary: Ver o Editar Mi Perfil
-      tags:
-      - usuarios
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/UserProfileRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/UserProfileRequest'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserProfileRequest'
-        required: true
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfile'
-          description: ''
-        '401':
-          description: No autenticado. Token faltante o inválido.
-        '400':
-          description: Datos de entrada inválidos.
-    patch:
-      operationId: usuarios_perfil_partial_update
-      description: Permite al usuario logueado ver sus datos, cambiar nombre/teléfono
-        y SUBIR SU FOTO.
-      summary: Ver o Editar Mi Perfil
-      tags:
-      - usuarios
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedUserProfileRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedUserProfileRequest'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedUserProfileRequest'
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-          description: ''
-        '401':
-          description: No autenticado. Token faltante o inválido.
-        '400':
-          description: Datos de entrada inválidos.
-  /api/usuarios/perfil/cambiar-password/:
-    put:
-      operationId: usuarios_perfil_cambiar_password_update
-      description: Requiere la contraseña anterior y la nueva repetida dos veces.
-      summary: Cambiar Contraseña
-      tags:
-      - usuarios
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
-        required: true
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PasswordChangeResponse'
-          description: ''
-    patch:
-      operationId: usuarios_perfil_cambiar_password_partial_update
-      description: Requiere la contraseña anterior y la nueva repetida dos veces.
-      summary: Cambiar Contraseña
-      tags:
-      - usuarios
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedChangePasswordRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedChangePasswordRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedChangePasswordRequest'
-      security:
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PasswordChangeResponse'
-          description: ''
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Token inválido o passwords no coinciden
   /api/usuarios/register/:
     post:
       operationId: usuarios_register_create
-      description: Crea un usuario con rol USER por defecto. Requiere email, nombres
-        y contraseña.
-      summary: Registrar un nuevo usuario
+      summary: Registrar Usuario
       tags:
       - Autenticación
       requestBody:
@@ -2205,9 +3156,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRegister'
-          description: Usuario creado exitosamente (incluye mensaje 'detail').
+          description: ''
         '400':
-          description: Error de validación (email ya existe o contraseña inválida).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Email duplicado o contraseña débil
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error interno
   /api/usuarios/roles/:
     get:
       operationId: usuarios_roles_list
@@ -2364,9 +3325,17 @@ paths:
           description: No response body
   /api/usuarios/roles/permisos/:
     get:
-      operationId: usuarios_roles_permisos_retrieve
+      operationId: usuarios_roles_permisos_list
       description: Lista todos los permisos del sistema para que el Admin elija cuáles
         asignar.
+      summary: Listar Permisos Disponibles
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: Un número de página dentro del conjunto de resultados paginado.
+        schema:
+          type: integer
       tags:
       - Gestión de Roles (Admin)
       security:
@@ -2376,7 +3345,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Role'
+                $ref: '#/components/schemas/PaginatedPermissionList'
           description: ''
   /api/usuarios/token/refresh/:
     post:
@@ -2415,6 +3384,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           maxLength: 200
         slug:
           type: string
@@ -2436,13 +3406,13 @@ components:
           readOnly: true
         autor:
           type: string
+          nullable: true
           maxLength: 100
       required:
       - categoria_nombre
       - fecha_publicacion
       - id
       - resumen
-      - titulo
     BlogDetail:
       type: object
       properties:
@@ -2454,6 +3424,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           maxLength: 200
         slug:
           type: string
@@ -2461,6 +3432,7 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
         autor:
           type: string
+          nullable: true
           maxLength: 100
         fecha_publicacion:
           type: string
@@ -2480,6 +3452,7 @@ components:
           maxLength: 400
         contenido:
           type: string
+          nullable: true
           title: Contenido del Artículo
         publicado:
           type: boolean
@@ -2498,24 +3471,22 @@ components:
           nullable: true
       required:
       - categoria_nombre
-      - contenido
       - created_at
       - fecha_publicacion
       - id
       - resumen
       - slug
-      - titulo
       - updated_at
     BlogDetailRequest:
       type: object
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 200
         autor:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         imagen_card:
           type: string
@@ -2533,6 +3504,7 @@ components:
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Contenido del Artículo
         publicado:
           type: boolean
@@ -2542,9 +3514,7 @@ components:
           type: integer
           nullable: true
       required:
-      - contenido
       - resumen
-      - titulo
     Carrito:
       type: object
       properties:
@@ -2614,15 +3584,18 @@ components:
           readOnly: true
         nombre:
           type: string
+          nullable: true
           title: Nombre de la Certificación/Logro
           maxLength: 150
         descripcion:
           type: string
+          nullable: true
           title: Descripción Corta
           maxLength: 300
         logo:
           type: string
           format: uri
+          nullable: true
           title: Logo o Ícono
         url_validacion:
           type: string
@@ -2634,6 +3607,7 @@ components:
           type: integer
           maximum: 2147483647
           minimum: 0
+          nullable: true
           description: 1 aparece primero, 2 después...
         es_visible:
           type: boolean
@@ -2645,23 +3619,23 @@ components:
       required:
       - created_at
       - id
-      - logo
-      - nombre
     CertificacionRequest:
       type: object
       properties:
         nombre:
           type: string
-          minLength: 1
+          nullable: true
           title: Nombre de la Certificación/Logro
           maxLength: 150
         descripcion:
           type: string
+          nullable: true
           title: Descripción Corta
           maxLength: 300
         logo:
           type: string
           format: binary
+          nullable: true
           title: Logo o Ícono
         url_validacion:
           type: string
@@ -2673,35 +3647,11 @@ components:
           type: integer
           maximum: 2147483647
           minimum: 0
+          nullable: true
           description: 1 aparece primero, 2 después...
         es_visible:
           type: boolean
           title: ¿Visible en la web?
-      required:
-      - logo
-      - nombre
-    ChangePasswordRequest:
-      type: object
-      properties:
-        old_password:
-          type: string
-          writeOnly: true
-          minLength: 1
-          title: Contraseña actual
-        new_password:
-          type: string
-          writeOnly: true
-          minLength: 1
-          title: Nueva contraseña
-        confirm_password:
-          type: string
-          writeOnly: true
-          minLength: 1
-          title: Confirmar nueva contraseña
-      required:
-      - confirm_password
-      - new_password
-      - old_password
     DetallePedido:
       type: object
       properties:
@@ -2750,12 +3700,15 @@ components:
           maxLength: 255
         ciudad:
           type: string
+          nullable: true
           maxLength: 100
         departamento:
           type: string
+          nullable: true
           maxLength: 100
         telefono:
           type: string
+          nullable: true
           maxLength: 20
         referencia:
           type: string
@@ -2764,13 +3717,11 @@ components:
           maxLength: 255
         es_principal:
           type: boolean
+          nullable: true
       required:
-      - ciudad
-      - departamento
       - direccion
       - id
       - nombre_completo
-      - telefono
     DireccionRequest:
       type: object
       properties:
@@ -2786,15 +3737,15 @@ components:
           maxLength: 255
         ciudad:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         departamento:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         telefono:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 20
         referencia:
           type: string
@@ -2803,12 +3754,26 @@ components:
           maxLength: 255
         es_principal:
           type: boolean
+          nullable: true
       required:
-      - ciudad
-      - departamento
       - direccion
       - nombre_completo
-      - telefono
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Descripción legible del error
+        code:
+          type: string
+          description: Código de error para el frontend
+        errors:
+          type: object
+          additionalProperties: {}
+          description: Detalle de errores por campo (si aplica)
+      required:
+      - code
+      - detail
     EstadoEnum:
       enum:
       - PENDIENTE
@@ -2855,6 +3820,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: Título de la Investigación
           maxLength: 200
         slug:
@@ -2864,13 +3830,15 @@ components:
         fecha_publicacion:
           type: string
           format: date
+          nullable: true
           title: Fecha de Publicación
         imagen_card:
           type: string
           format: uri
-          title: Imagen Pequeña (Card)
+          nullable: true
         resumen:
           type: string
+          nullable: true
           title: Resumen Ejecutivo
           maxLength: 500
         categoria_nombre:
@@ -2878,15 +3846,12 @@ components:
           readOnly: true
         autor:
           type: string
+          nullable: true
           title: Investigador/Autor
           maxLength: 100
       required:
       - categoria_nombre
-      - fecha_publicacion
       - id
-      - imagen_card
-      - resumen
-      - titulo
     InvestigacionDetail:
       type: object
       properties:
@@ -2898,6 +3863,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: Título de la Investigación
           maxLength: 200
         slug:
@@ -2906,15 +3872,18 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
         autor:
           type: string
+          nullable: true
           title: Investigador/Autor
           maxLength: 100
         fecha_publicacion:
           type: string
           format: date
+          nullable: true
           title: Fecha de Publicación
         imagen_card:
           type: string
           format: uri
+          nullable: true
           title: Imagen Pequeña (Card)
         imagen_banner:
           type: string
@@ -2928,10 +3897,12 @@ components:
           title: PDF Completo (Opcional)
         resumen:
           type: string
+          nullable: true
           title: Resumen Ejecutivo
           maxLength: 500
         contenido:
           type: string
+          nullable: true
           title: Detalles de la Investigación
         publicado:
           type: boolean
@@ -2951,35 +3922,32 @@ components:
           title: Línea de Investigación
       required:
       - categoria_nombre
-      - contenido
       - created_at
-      - fecha_publicacion
       - id
-      - imagen_card
-      - resumen
       - slug
-      - titulo
       - updated_at
     InvestigacionDetailRequest:
       type: object
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: Título de la Investigación
           maxLength: 200
         autor:
           type: string
-          minLength: 1
+          nullable: true
           title: Investigador/Autor
           maxLength: 100
         fecha_publicacion:
           type: string
           format: date
+          nullable: true
           title: Fecha de Publicación
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Imagen Pequeña (Card)
         imagen_banner:
           type: string
@@ -2993,12 +3961,13 @@ components:
           title: PDF Completo (Opcional)
         resumen:
           type: string
-          minLength: 1
+          nullable: true
           title: Resumen Ejecutivo
           maxLength: 500
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Detalles de la Investigación
         publicado:
           type: boolean
@@ -3008,12 +3977,6 @@ components:
           type: integer
           nullable: true
           title: Línea de Investigación
-      required:
-      - contenido
-      - fecha_publicacion
-      - imagen_card
-      - resumen
-      - titulo
     ItemCarrito:
       type: object
       properties:
@@ -3057,6 +4020,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: Título de la Noticia
           maxLength: 200
         slug:
@@ -3067,13 +4031,15 @@ components:
           type: string
           format: date
           readOnly: true
+          nullable: true
           title: Fecha de Publicación
         imagen_card:
           type: string
           format: uri
-          title: Imagen Pequeña (Card)
+          nullable: true
         resumen:
           type: string
+          nullable: true
           title: Resumen corto (Intro)
           maxLength: 400
         categoria:
@@ -3085,14 +4051,12 @@ components:
           readOnly: true
         autor:
           type: string
+          nullable: true
           maxLength: 100
       required:
       - categoria_nombre
       - fecha_publicacion
       - id
-      - imagen_card
-      - resumen
-      - titulo
     NoticiaDetail:
       type: object
       properties:
@@ -3104,6 +4068,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: Título de la Noticia
           maxLength: 200
         slug:
@@ -3112,15 +4077,18 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
         autor:
           type: string
+          nullable: true
           maxLength: 100
         fecha_publicacion:
           type: string
           format: date
           readOnly: true
+          nullable: true
           title: Fecha de Publicación
         imagen_card:
           type: string
           format: uri
+          nullable: true
           title: Imagen Pequeña (Card)
         imagen_banner:
           type: string
@@ -3129,16 +4097,20 @@ components:
           title: Banner Grande
         resumen:
           type: string
+          nullable: true
           title: Resumen corto (Intro)
           maxLength: 400
         contenido:
           type: string
+          nullable: true
           title: Contenido Completo
         publicado:
           type: boolean
+          nullable: true
           title: ¿Publicado?
         es_destacada:
           type: boolean
+          nullable: true
           title: ¿Es Destacada?
         created_at:
           type: string
@@ -3154,30 +4126,27 @@ components:
           title: Categoría
       required:
       - categoria_nombre
-      - contenido
       - created_at
       - fecha_publicacion
       - id
-      - imagen_card
-      - resumen
       - slug
-      - titulo
       - updated_at
     NoticiaDetailRequest:
       type: object
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: Título de la Noticia
           maxLength: 200
         autor:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Imagen Pequeña (Card)
         imagen_banner:
           type: string
@@ -3186,28 +4155,26 @@ components:
           title: Banner Grande
         resumen:
           type: string
-          minLength: 1
+          nullable: true
           title: Resumen corto (Intro)
           maxLength: 400
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Contenido Completo
         publicado:
           type: boolean
+          nullable: true
           title: ¿Publicado?
         es_destacada:
           type: boolean
+          nullable: true
           title: ¿Es Destacada?
         categoria:
           type: integer
           nullable: true
           title: Categoría
-      required:
-      - contenido
-      - imagen_card
-      - resumen
-      - titulo
     PaginatedBlogCardList:
       type: object
       required:
@@ -3415,6 +4382,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Pedido'
+    PaginatedPermissionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
     PaginatedProductoCardList:
       type: object
       required:
@@ -3553,12 +4543,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserRoleAssign'
-    PasswordChangeResponse:
-      type: object
-      properties:
-        detail:
-          type: string
-          default: Contraseña actualizada correctamente.
     PasswordResetRequestRequest:
       type: object
       properties:
@@ -3573,11 +4557,11 @@ components:
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 200
         autor:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         imagen_card:
           type: string
@@ -3595,6 +4579,7 @@ components:
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Contenido del Artículo
         publicado:
           type: boolean
@@ -3623,16 +4608,18 @@ components:
       properties:
         nombre:
           type: string
-          minLength: 1
+          nullable: true
           title: Nombre de la Certificación/Logro
           maxLength: 150
         descripcion:
           type: string
+          nullable: true
           title: Descripción Corta
           maxLength: 300
         logo:
           type: string
           format: binary
+          nullable: true
           title: Logo o Ícono
         url_validacion:
           type: string
@@ -3644,28 +4631,11 @@ components:
           type: integer
           maximum: 2147483647
           minimum: 0
+          nullable: true
           description: 1 aparece primero, 2 después...
         es_visible:
           type: boolean
           title: ¿Visible en la web?
-    PatchedChangePasswordRequest:
-      type: object
-      properties:
-        old_password:
-          type: string
-          writeOnly: true
-          minLength: 1
-          title: Contraseña actual
-        new_password:
-          type: string
-          writeOnly: true
-          minLength: 1
-          title: Nueva contraseña
-        confirm_password:
-          type: string
-          writeOnly: true
-          minLength: 1
-          title: Confirmar nueva contraseña
     PatchedDireccionRequest:
       type: object
       properties:
@@ -3681,15 +4651,15 @@ components:
           maxLength: 255
         ciudad:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         departamento:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         telefono:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 20
         referencia:
           type: string
@@ -3698,6 +4668,7 @@ components:
           maxLength: 255
         es_principal:
           type: boolean
+          nullable: true
     PatchedFavoritoRequest:
       type: object
       properties:
@@ -3709,21 +4680,23 @@ components:
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: Título de la Investigación
           maxLength: 200
         autor:
           type: string
-          minLength: 1
+          nullable: true
           title: Investigador/Autor
           maxLength: 100
         fecha_publicacion:
           type: string
           format: date
+          nullable: true
           title: Fecha de Publicación
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Imagen Pequeña (Card)
         imagen_banner:
           type: string
@@ -3737,12 +4710,13 @@ components:
           title: PDF Completo (Opcional)
         resumen:
           type: string
-          minLength: 1
+          nullable: true
           title: Resumen Ejecutivo
           maxLength: 500
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Detalles de la Investigación
         publicado:
           type: boolean
@@ -3757,16 +4731,17 @@ components:
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: Título de la Noticia
           maxLength: 200
         autor:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 100
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Imagen Pequeña (Card)
         imagen_banner:
           type: string
@@ -3775,18 +4750,21 @@ components:
           title: Banner Grande
         resumen:
           type: string
-          minLength: 1
+          nullable: true
           title: Resumen corto (Intro)
           maxLength: 400
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Contenido Completo
         publicado:
           type: boolean
+          nullable: true
           title: ¿Publicado?
         es_destacada:
           type: boolean
+          nullable: true
           title: ¿Es Destacada?
         categoria:
           type: integer
@@ -3798,20 +4776,16 @@ components:
       properties:
         nombre:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 200
-        slug:
-          type: string
-          minLength: 1
-          maxLength: 50
-          pattern: ^[-a-zA-Z0-9_]+$
         descripcion:
           type: string
-          minLength: 1
+          nullable: true
         precio:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         stock:
           type: integer
           maximum: 2147483647
@@ -3830,7 +4804,7 @@ components:
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: 'Nombre del Cultivo (ej: Batata)'
           maxLength: 150
         imagen_card:
@@ -3840,16 +4814,18 @@ components:
           title: Foto del Cultivo
         descripcion_tecnica:
           type: string
-          minLength: 1
+          nullable: true
           title: Descripción Técnica / Intro
           maxLength: 500
         resultados:
           type: string
+          nullable: true
           title: Resultados Esperados
           maxLength: 300
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Pasos del Protocolo
         archivo_pdf:
           type: string
@@ -3887,7 +4863,7 @@ components:
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: Título del Servicio
           maxLength: 100
         orden:
@@ -3899,10 +4875,11 @@ components:
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Imagen Pequeña
         descripcion_corta:
           type: string
-          minLength: 1
+          nullable: true
           title: Descripción Corta (card)
         imagen_banner:
           type: string
@@ -3910,19 +4887,21 @@ components:
           nullable: true
         resumen:
           type: string
-          minLength: 1
+          nullable: true
           title: Summary / Resumen
         que_obtienes:
           type: string
           minLength: 1
+          nullable: true
           title: What you get / Qué obtienes
         por_que_importa:
           type: string
-          minLength: 1
+          nullable: true
           title: Why it matters / Por qué importa
         como_funciona:
           type: string
           minLength: 1
+          nullable: true
           title: How it works / Cómo funciona
         adicionales:
           type: string
@@ -3949,11 +4928,12 @@ components:
       properties:
         contenido:
           type: string
-          minLength: 1
+          nullable: true
           title: Reseña / Opinión
           maxLength: 300
         cargo_empresa:
           type: string
+          nullable: true
           title: Cargo / Empresa (Opcional)
           maxLength: 100
     PatchedUserProfileRequest:
@@ -4032,6 +5012,28 @@ components:
         metodo_pago:
           type: string
           maxLength: 50
+    Permission:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Nombre
+          maxLength: 255
+        codename:
+          type: string
+          title: Nombre en código
+          maxLength: 100
+        content_type:
+          type: integer
+          title: Tipo de contenido
+      required:
+      - codename
+      - content_type
+      - id
+      - name
     ProductoCard:
       type: object
       description: Vista ligera para listas
@@ -4041,6 +5043,7 @@ components:
           readOnly: true
         nombre:
           type: string
+          nullable: true
           maxLength: 200
         slug:
           type: string
@@ -4050,6 +5053,7 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         imagen_principal:
           type: string
           format: uri
@@ -4062,8 +5066,6 @@ components:
       required:
       - categoria_nombre
       - id
-      - nombre
-      - precio
       - slug
     ProductoCardRequest:
       type: object
@@ -4071,7 +5073,7 @@ components:
       properties:
         nombre:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 200
         slug:
           type: string
@@ -4082,6 +5084,7 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         imagen_principal:
           type: string
           format: binary
@@ -4089,8 +5092,6 @@ components:
         es_destacado:
           type: boolean
       required:
-      - nombre
-      - precio
       - slug
     ProductoDetail:
       type: object
@@ -4109,17 +5110,20 @@ components:
           readOnly: true
         nombre:
           type: string
+          nullable: true
           maxLength: 200
         slug:
           type: string
-          maxLength: 50
+          readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
         descripcion:
           type: string
+          nullable: true
         precio:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         stock:
           type: integer
           maximum: 2147483647
@@ -4135,10 +5139,7 @@ components:
           nullable: true
       required:
       - categoria_nombre
-      - descripcion
       - id
-      - nombre
-      - precio
       - relacionados
       - slug
     ProductoDetailRequest:
@@ -4147,20 +5148,16 @@ components:
       properties:
         nombre:
           type: string
-          minLength: 1
+          nullable: true
           maxLength: 200
-        slug:
-          type: string
-          minLength: 1
-          maxLength: 50
-          pattern: ^[-a-zA-Z0-9_]+$
         descripcion:
           type: string
-          minLength: 1
+          nullable: true
         precio:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         stock:
           type: integer
           maximum: 2147483647
@@ -4174,11 +5171,6 @@ components:
         categoria:
           type: integer
           nullable: true
-      required:
-      - descripcion
-      - nombre
-      - precio
-      - slug
     ProtocoloCard:
       type: object
       properties:
@@ -4187,6 +5179,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: 'Nombre del Cultivo (ej: Batata)'
           maxLength: 150
         slug:
@@ -4208,7 +5201,6 @@ components:
           nullable: true
       required:
       - id
-      - titulo
     ProtocoloDetail:
       type: object
       properties:
@@ -4217,6 +5209,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: 'Nombre del Cultivo (ej: Batata)'
           maxLength: 150
         slug:
@@ -4230,14 +5223,17 @@ components:
           title: Foto del Cultivo
         descripcion_tecnica:
           type: string
+          nullable: true
           title: Descripción Técnica / Intro
           maxLength: 500
         resultados:
           type: string
+          nullable: true
           title: Resultados Esperados
           maxLength: 300
         contenido:
           type: string
+          nullable: true
           title: Pasos del Protocolo
         archivo_pdf:
           type: string
@@ -4262,19 +5258,16 @@ components:
           format: date-time
           readOnly: true
       required:
-      - contenido
       - created_at
-      - descripcion_tecnica
       - id
       - slug
-      - titulo
       - updated_at
     ProtocoloDetailRequest:
       type: object
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: 'Nombre del Cultivo (ej: Batata)'
           maxLength: 150
         imagen_card:
@@ -4284,16 +5277,18 @@ components:
           title: Foto del Cultivo
         descripcion_tecnica:
           type: string
-          minLength: 1
+          nullable: true
           title: Descripción Técnica / Intro
           maxLength: 500
         resultados:
           type: string
+          nullable: true
           title: Resultados Esperados
           maxLength: 300
         contenido:
           type: string
           minLength: 1
+          nullable: true
           title: Pasos del Protocolo
         archivo_pdf:
           type: string
@@ -4309,10 +5304,6 @@ components:
           description: Orden de aparición en la rejilla
         es_visible:
           type: boolean
-      required:
-      - contenido
-      - descripcion_tecnica
-      - titulo
     Role:
       type: object
       properties:
@@ -4360,6 +5351,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: Título del Servicio
           maxLength: 100
         slug:
@@ -4370,9 +5362,10 @@ components:
         imagen_card:
           type: string
           format: uri
-          title: Imagen Pequeña
+          nullable: true
         descripcion_corta:
           type: string
+          nullable: true
           title: Descripción Corta (card)
         orden:
           type: integer
@@ -4381,10 +5374,7 @@ components:
           title: Orden de aparición
           description: 'Menor número aparece primero (ej: 1, 2, 3...)'
       required:
-      - descripcion_corta
       - id
-      - imagen_card
-      - titulo
     ServicioDetail:
       type: object
       description: |-
@@ -4396,6 +5386,7 @@ components:
           readOnly: true
         titulo:
           type: string
+          nullable: true
           title: Título del Servicio
           maxLength: 100
         slug:
@@ -4412,9 +5403,11 @@ components:
         imagen_card:
           type: string
           format: uri
+          nullable: true
           title: Imagen Pequeña
         descripcion_corta:
           type: string
+          nullable: true
           title: Descripción Corta (card)
         imagen_banner:
           type: string
@@ -4422,15 +5415,19 @@ components:
           nullable: true
         resumen:
           type: string
+          nullable: true
           title: Summary / Resumen
         que_obtienes:
           type: string
+          nullable: true
           title: What you get / Qué obtienes
         por_que_importa:
           type: string
+          nullable: true
           title: Why it matters / Por qué importa
         como_funciona:
           type: string
+          nullable: true
           title: How it works / Cómo funciona
         adicionales:
           type: string
@@ -4441,16 +5438,9 @@ components:
           format: date-time
           readOnly: true
       required:
-      - como_funciona
       - created_at
-      - descripcion_corta
       - id
-      - imagen_card
-      - por_que_importa
-      - que_obtienes
-      - resumen
       - slug
-      - titulo
     ServicioDetailRequest:
       type: object
       description: |-
@@ -4459,7 +5449,7 @@ components:
       properties:
         titulo:
           type: string
-          minLength: 1
+          nullable: true
           title: Título del Servicio
           maxLength: 100
         orden:
@@ -4471,10 +5461,11 @@ components:
         imagen_card:
           type: string
           format: binary
+          nullable: true
           title: Imagen Pequeña
         descripcion_corta:
           type: string
-          minLength: 1
+          nullable: true
           title: Descripción Corta (card)
         imagen_banner:
           type: string
@@ -4482,33 +5473,27 @@ components:
           nullable: true
         resumen:
           type: string
-          minLength: 1
+          nullable: true
           title: Summary / Resumen
         que_obtienes:
           type: string
           minLength: 1
+          nullable: true
           title: What you get / Qué obtienes
         por_que_importa:
           type: string
-          minLength: 1
+          nullable: true
           title: Why it matters / Por qué importa
         como_funciona:
           type: string
           minLength: 1
+          nullable: true
           title: How it works / Cómo funciona
         adicionales:
           type: string
           minLength: 1
           nullable: true
           title: Optional Add-ons
-      required:
-      - como_funciona
-      - descripcion_corta
-      - imagen_card
-      - por_que_importa
-      - que_obtienes
-      - resumen
-      - titulo
     Testimonio:
       type: object
       properties:
@@ -4517,10 +5502,12 @@ components:
           readOnly: true
         contenido:
           type: string
+          nullable: true
           title: Reseña / Opinión
           maxLength: 300
         cargo_empresa:
           type: string
+          nullable: true
           title: Cargo / Empresa (Opcional)
           maxLength: 100
         usuario_nombre:
@@ -4536,9 +5523,47 @@ components:
         es_visible:
           type: boolean
           readOnly: true
+          nullable: true
           title: ¿Aprobado para mostrar?
       required:
-      - contenido
+      - created_at
+      - es_visible
+      - id
+      - usuario_foto
+      - usuario_nombre
+    TestimonioAdmin:
+      type: object
+      description: |-
+        Serializador ADMIN:
+        - Hereda todo del anterior.
+        - Pero SOBRESCRIBE Meta para sacar 'es_visible' de read_only.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        contenido:
+          type: string
+          nullable: true
+          title: Reseña / Opinión
+          maxLength: 300
+        cargo_empresa:
+          type: string
+          nullable: true
+          title: Cargo / Empresa (Opcional)
+          maxLength: 100
+        usuario_nombre:
+          type: string
+          readOnly: true
+        usuario_foto:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        es_visible:
+          type: boolean
+      required:
       - created_at
       - es_visible
       - id
@@ -4549,15 +5574,14 @@ components:
       properties:
         contenido:
           type: string
-          minLength: 1
+          nullable: true
           title: Reseña / Opinión
           maxLength: 300
         cargo_empresa:
           type: string
+          nullable: true
           title: Cargo / Empresa (Opcional)
           maxLength: 100
-      required:
-      - contenido
     TipoEnum:
       enum:
       - NOTICIA
