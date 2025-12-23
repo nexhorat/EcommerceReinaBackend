@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.3 (2025-12-23)
+
+### Bug Fixes
+
+- Implementacion de medidas preventivas contra la numeracion de usuarios
+  ([`6565669`](https://github.com/nexhorat/EcommerceReinaBackend/commit/65656699ec09c1396b995fa2f5cbca2a7226d2c9))
+
+
 ## v1.8.2 (2025-12-22)
 
 ### Bug Fixes
