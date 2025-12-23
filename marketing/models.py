@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.conf import settings
 from django.utils.text import slugify
 from django_ckeditor_5.fields import CKEditor5Field
@@ -14,7 +13,7 @@ class Categoria(models.Model):
         ('PRODUCTO', 'Producto'), 
     ]
     nombre = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True, max_length=255)
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, verbose_name="Tipo de Contenido")
 
     class Meta:
@@ -25,7 +24,7 @@ class Categoria(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.nombre)
+            self.slug = slugify(self.nombre)[:255]
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -35,8 +34,8 @@ class Categoria(models.Model):
 # Seccion nuestros servicios
 class Servicio(WebPConverterMixin, models.Model):
     # -- campos de cards --
-    titulo = models.CharField(max_length=100, verbose_name="Título del Servicio", blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True, help_text="Identificador para la URL")
+    titulo = models.CharField(max_length=200, verbose_name="Título del Servicio", blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True, help_text="Identificador para la URL", max_length=255)
     orden = models.PositiveIntegerField(default=0, verbose_name="Orden de aparición", help_text="Menor número aparece primero (ej: 1, 2, 3...)")
     imagen_card = models.ImageField(upload_to='servicios/cards/', verbose_name="Imagen Pequeña", blank=True, null=True)
     descripcion_corta = models.TextField(verbose_name="Descripción Corta (card)", blank=True, null=True)
@@ -72,7 +71,7 @@ class Servicio(WebPConverterMixin, models.Model):
     
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.titulo)
+            self.slug = slugify(self.titulo)[:255]
         
         if self.imagen_card:
             self.convertir_imagen_a_webp('imagen_card')
@@ -97,7 +96,7 @@ class Noticia(WebPConverterMixin, models.Model):
     )
 
     titulo = models.CharField(max_length=200, verbose_name="Título de la Noticia", blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True, max_length=255)
     
     # Autor (Opcional: puede ser texto simple o relación con User)
     autor = models.CharField(max_length=100, default="Grupo Reina", verbose_name="Autor", blank=True, null=True)
@@ -129,7 +128,7 @@ class Noticia(WebPConverterMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.titulo)
+            self.slug = slugify(self.titulo)[:255]
 
         if self.imagen_card:
             self.convertir_imagen_a_webp('imagen_card')
@@ -152,7 +151,7 @@ class Investigacion(WebPConverterMixin, models.Model):
     )
 
     titulo = models.CharField(max_length=200, verbose_name="Título de la Investigación", blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True, max_length=255)
     autor = models.CharField(max_length=100, default="Grupo Reina", verbose_name="Investigador/Autor", blank=True, null=True)
     fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación", blank=True, null=True)
 
@@ -183,7 +182,7 @@ class Investigacion(WebPConverterMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.titulo)
+            self.slug = slugify(self.titulo)[:255]
 
         if self.imagen_card:
             self.convertir_imagen_a_webp('imagen_card')
@@ -197,7 +196,7 @@ class Investigacion(WebPConverterMixin, models.Model):
     
     
 class Certificacion(WebPConverterMixin, models.Model):
-    nombre = models.CharField(max_length=150, verbose_name="Nombre de la Certificación/Logro", blank=True, null=True)
+    nombre = models.CharField(max_length=200, verbose_name="Nombre de la Certificación/Logro", blank=True, null=True)
     descripcion = models.TextField(max_length=300, blank=True, verbose_name="Descripción Corta", null=True)
     
     logo = models.ImageField(upload_to='certificaciones/logos/', verbose_name="Logo o Ícono", blank=True, null=True)
@@ -250,7 +249,7 @@ class Testimonio(models.Model):
 class Blog(WebPConverterMixin, models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='posts', limit_choices_to={'tipo': 'BLOG'})
     titulo = models.CharField(max_length=200, blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True, max_length=255)
     autor = models.CharField(max_length=100, default="Grupo Reina", blank=True, null=True) # O ForeignKey a User
     fecha_publicacion = models.DateField(auto_now_add=True)
 
@@ -277,7 +276,7 @@ class Blog(WebPConverterMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.titulo)
+            self.slug = slugify(self.titulo)[:255]
         
         if self.imagen_card:
             self.convertir_imagen_a_webp('imagen_card')
@@ -289,8 +288,8 @@ class Blog(WebPConverterMixin, models.Model):
 
     
 class Protocolo(WebPConverterMixin, models.Model):
-    titulo = models.CharField(max_length=150, verbose_name="Nombre del Cultivo (ej: Batata)", blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True)
+    titulo = models.CharField(max_length=200, verbose_name="Nombre del Cultivo (ej: Batata)", blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True, max_length=255)
     
 
     imagen_card = models.ImageField(upload_to='protocolos/cards/', verbose_name="Foto del Cultivo", blank=True, null=True)
@@ -319,9 +318,9 @@ class Protocolo(WebPConverterMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.titulo)
+            self.slug = slugify(self.titulo)[:255]
         
-        if self.imagen_card:
+        if self.imagen_card:    
             self.convertir_imagen_a_webp('imagen_card')
             
         super().save(*args, **kwargs)
