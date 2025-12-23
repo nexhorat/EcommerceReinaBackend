@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.4 (2025-12-23)
+
+### Bug Fixes
+
+- Correccion de errores por longitud de campos
+  ([`8a3a0bc`](https://github.com/nexhorat/EcommerceReinaBackend/commit/8a3a0bc7ec4b2ac9c8d87f113f4f4688eb9e2589))
+
+
 ## v1.8.3 (2025-12-23)
 
 ### Bug Fixes
