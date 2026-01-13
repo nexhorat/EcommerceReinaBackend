@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.5 (2026-01-13)
+
+### Bug Fixes
+
+- Correccion del Throttling
+  ([`467db51`](https://github.com/nexhorat/EcommerceReinaBackend/commit/467db512f00d2b97cbed74f5298252369866554e))
+
+
 ## v1.8.4 (2025-12-23)
 
 ### Bug Fixes
