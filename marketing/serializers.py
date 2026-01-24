@@ -153,7 +153,7 @@ class ProtocoloCardSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Protocolo
-        fields = ['id', 'titulo', 'slug', 'imagen_card', 'orden', 'archivo_pdf']
+        fields = ['id', 'titulo', 'slug', 'imagen_card', 'orden', 'archivo_pdf', 'es_visible']
 
 class ProtocoloDetailSerializer(serializers.ModelSerializer):
     class Meta:
