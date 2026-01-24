@@ -75,7 +75,7 @@ class InvestigacionCardSerializer(serializers.ModelSerializer):
         model = Investigacion
         fields = [
             'id', 'titulo', 'slug', 'fecha_publicacion', 
-            'imagen_card', 'resumen', 'categoria_nombre', 'autor'
+            'imagen_card', 'resumen', 'categoria_nombre', 'autor', 'es_destacada'
         ]
 
 class InvestigacionDetailSerializer(serializers.ModelSerializer):
